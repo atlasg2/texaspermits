@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-06-09 — Resume FY2026 + continue into FY2025
+**Asked:** Resume scraping all of 2026; then keep going with the next year too.
+**Done:**
+- Found the prior FY2026 background backfill had died near the end (log stopped ~21,000/21,947)
+  before reaching the Supabase sync step. DB state: 21,750/22,697 seqs attempted for 2026,
+  17,940 valid projects — ~947 left.
+- Relaunched the self-healing runner for the **2025-2026 range**: `./run_backfill.sh 2025-2026 8`
+  (background, detached). With `--order newest` it sorts years descending, so it finishes the
+  remaining ~947 of FY2026 first (skips the already-attempted seqs — fully resumable), then
+  rolls straight into all of FY2025, then UPSERTs both years into Supabase.
+- Verified running: pids for run_backfill.sh + tabs_scraper, logging to data/backfill.log.
+**Next:** when it completes, verify FY2025+FY2026 counts in Supabase; consider earlier years; build the app.
+
 ## 2026-06-09 — Strategy doc (v0)
 **Asked:** Think through the product/business; is anyone doing this already; what's the plan.
 **Done:** Researched landscape — no one productizes TABS as leads; comps are Dodge
