@@ -109,8 +109,11 @@ def main():
     if not url:
         sys.exit("DATABASE_URL not set (run: set -a; source .env; set +a)")
 
-    s = sqlite3.connect(args.db)
+    # Wait out the scraper's brief write locks instead of erroring, so this can
+    # run concurrently with an in-progress backfill (incremental sync-as-we-go).
+    s = sqlite3.connect(args.db, timeout=30)
     s.row_factory = sqlite3.Row
+    s.execute("PRAGMA busy_timeout=30000")
     q, params = "SELECT * FROM projects", ()
     if args.years:
         yrs = years_list(args.years)
