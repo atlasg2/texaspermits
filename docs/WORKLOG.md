@@ -5,6 +5,16 @@
 
 ---
 
+## 2026-06-09 — Conventions doc (CLAUDE.md) + cleanup
+**Asked:** Delete old `spec1.md` (abandoned permit-engine direction); add a "how we
+work like a pro" doc to follow as we go (worklog, commits/pushes, SQL migrations).
+**Done:**
+- Deleted `spec1.md` (old city-permit-engine spec; superseded by the TABS approach).
+- Added `CLAUDE.md` = process/working agreement: worklog-every-turn, commit+push each
+  unit, migrations-only SQL, secrets/PII never in git, no fabricated data, polite scraping.
+- Committed + pushed.
+**Next:** SQLite→Supabase sync script; run FY2026 backfill.
+
 ## 2026-06-09 — Fresh Supabase + migrations + git/GitHub
 **Asked:** Switch to the fresh Supabase project; set up DB migrations "like a pro";
 actually commit & push (hadn't seen any commits yet).
