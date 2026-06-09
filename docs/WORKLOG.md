@@ -5,6 +5,14 @@
 
 ---
 
+## 2026-06-09 — Strategy doc (v0)
+**Asked:** Think through the product/business; is anyone doing this already; what's the plan.
+**Done:** Researched landscape — no one productizes TABS as leads; comps are Dodge
+($6–12k/yr/seat, batch) & ConstructConnect ($4.8–8.4k/yr/seat); they miss ~⅓ of projects.
+Wrote `docs/STRATEGY.md` (v0, explicitly evolving): TABS = the early signal the big tools
+charge thousands for; moat = status history (can't backfill) + architect→GC linkage; phased
+plan (use for Elite → niche paid pilot $99–299/mo → SaaS → expand). Committed.
+
 ## 2026-06-09 — Supabase sync + FY2026 backfill launched
 **Asked:** Build SQLite→Supabase sync; run FY2026 into Supabase (background, committing as we go).
 **Done:**
