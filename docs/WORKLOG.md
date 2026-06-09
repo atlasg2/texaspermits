@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-06-09 — Supabase sync + FY2026 backfill launched
+**Asked:** Build SQLite→Supabase sync; run FY2026 into Supabase (background, committing as we go).
+**Done:**
+- `scripts/sync_to_supabase.py`: idempotent UPSERT keyed on project_number, type
+  conversions (M/D/YYYY→date, cost/sqft→numeric, Yes/No→bool, ''→NULL), logs
+  status changes into status_history. Tested: 622 FY2026 rows + 622 status events
+  landed in Supabase with correct types.
+- `run_backfill.sh`: self-healing loop (scrape newest-first → resume on crash →
+  sync to Supabase at the end). Logs to data/backfill.log.
+- Launched FY2026 backfill in background (~85 min, resumable).
+**Next:** when FY2026 completes, verify in Supabase; then run remaining years; start app.
+
 ## 2026-06-09 — Conventions doc (CLAUDE.md) + cleanup
 **Asked:** Delete old `spec1.md` (abandoned permit-engine direction); add a "how we
 work like a pro" doc to follow as we go (worklog, commits/pushes, SQL migrations).
