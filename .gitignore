@@ -1,0 +1,21 @@
+# secrets — NEVER commit
+.env
+.env.local
+.env.*
+*.key
+
+# data / scraper output
+data/
+*.db
+*.db-wal
+*.db-shm
+*.log
+
+# python
+__pycache__/
+*.pyc
+
+# node / next
+node_modules/
+.next/
+out/
