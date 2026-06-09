@@ -16,7 +16,16 @@
   remaining ~947 of FY2026 first (skips the already-attempted seqs — fully resumable), then
   rolls straight into all of FY2025, then UPSERTs both years into Supabase.
 - Verified running: pids for run_backfill.sh + tabs_scraper, logging to data/backfill.log.
-**Next:** when it completes, verify FY2025+FY2026 counts in Supabase; consider earlier years; build the app.
+- Added **sync_watcher.sh**: incremental SQLite→Supabase sync every 5 min during the
+  backfill (idempotent UPSERT) so a mid-run crash never loses what already reached Supabase;
+  stops on the backfill's `ALL DONE` marker. Added 30s busy_timeout to the SQLite reader for
+  safe concurrent reads.
+- **Bug fixed:** a scraped text field held a NUL (0x00) byte → Postgres rejects NUL in string
+  literals → sync died ~13.5k rows in. Fixed in `nz()` (strip NUL on all text cols). Watcher
+  re-invokes python fresh each pass, so it picks up the fix automatically next cycle.
+- FY2026 finished (22,697/22,697); FY2025 underway. Both background-detached — independent of
+  the Claude session, fully resumable.
+**Next:** confirm a clean sync pass; verify FY2025+FY2026 counts in Supabase; earlier years; app.
 
 ## 2026-06-09 — Strategy doc (v0)
 **Asked:** Think through the product/business; is anyone doing this already; what's the plan.
