@@ -59,7 +59,8 @@ def pbool(s):
 
 def nz(v):
     if isinstance(v, str):
-        v = v.strip()
+        # Postgres text cannot contain NUL (0x00); strip it out before insert.
+        v = v.replace("\x00", "").strip()
     return v or None
 
 
