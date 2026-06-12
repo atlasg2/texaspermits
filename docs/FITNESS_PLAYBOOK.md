@@ -34,14 +34,19 @@ Three distinct buyer types, each needing a different sales motion:
 **Deprioritize**: small-box franchises (Anytime ~$95k tickets, Orangetheory, F45) —
 single-unit owners, small scope, high relationship cost per dollar.
 
-**D. Emerging operators (grow-with strategy).** Group gym projects by tenant/owner/contact
-name; exclude mega-brands + schools/cities; keep 2–5-project groups in the 5–80k sqft band.
-Partial data already surfaces: "Devon Arnold" (5 projects, 35–58k sqft, 5 metros),
-Jessica King (3, Houston/Dallas), Mike Manning (2×40k, Frisco) — these contact names ARE
-the construction leads. Velocity alert: 3rd registration in 12 months ⇒ they're scaling ⇒
-start the relationship. Win at 5 clubs, ride to 50 (CLUB4 was this in 2015). Cross-state
-check each name via Shovels/BuildZoom/LinkedIn. (Also: Life Time = 8 projects — add to
-brand dictionary.)
+**D. Emerging operators (grow-with strategy).** Method, step by step:
+(1) every project mentioning gym/fitness in name/facility/tenant/scope fields;
+(2) identity = tenant if present else owner (gyms lease — owner is often the landlord);
+(3) exclude schools/cities/counties (gymnasiums ≠ gym businesses);
+(4) exclude known mega-brands; (5) keep 5k–80k sqft (gym-sized);
+(6) count projects per name — 2+ = repeat builder worth investigating.
+Partial data surfaces: "Devon Arnold" (5 projects, 35–58k sqft, 5 metros), Jessica King
+(3, Houston/Dallas), Mike Manning (2×40k, Frisco). ⚠ These are *unidentified names*, not
+confirmed operators — a name may be a franchisee's construction manager or an architect's
+PM. Next step per name: open all their project records, read every field, Google/LinkedIn
+the name — investigate before concluding. Velocity alert once identified: 3rd registration
+in 12 months ⇒ scaling ⇒ start the relationship (win at 5 clubs, ride to 50; CLUB4 was
+this in 2015). (Also: Life Time = 8 projects — add to brand dictionary.)
 
 ## 2. The plays (what Elite actually does with this)
 
@@ -76,11 +81,15 @@ client, not a target. For each other org:
    bridge) or owner-direct as FF&E with the equipment (⇒ need their construction lead)?
    Elite's combined flooring + equipment install is an owner-direct pitch: one vendor owns
    the last 3 weeks before opening.
-2. **Incumbent risk.** Planet Fitness mandates equipment brands corporately (new builds
-   likely locked — target franchisee remodels instead). PE chains (EOS) RFP everything —
-   winnable on proof/price, and EOS is the highest-velocity TX builder in our data.
-   Founder/family chains buy on relationship — the CLUB4 reference lands hardest there.
-   New entrants (Amped) have no TX incumbent — first mover wins.
+2. **Incumbent risk — ⚠ HYPOTHESES, NOT DATA.** TABS contains zero vendor information;
+   nothing below is verified. Unverified assumptions to test: Planet Fitness may mandate
+   equipment/install corporately (⇒ locked?); PE chains like EOS may buy via RFP
+   (⇒ price-winnable?); founder/family chains may buy on relationship; new entrants
+   (Amped) may lack a TX vendor — or may import their FL one. **Verify before acting:**
+   (a) ask Elite's partners — they likely know who floors each chain today;
+   (b) call the fingerprint architects — they write the flooring spec and know the vendor;
+   (c) GC lookup on a sample of projects (Shovels trial). Only the velocity numbers
+   (e.g. EOS = highest-velocity TX builder) are data.
 3. **Velocity + geography from the data** — pitch the pipeline ("you have 4 sites in plan
    review in DFW"), not the vendor list.
 4. **Remodel cycle.** Gym floors turn over every 5–8 yrs. `type_of_work=Renovation` on

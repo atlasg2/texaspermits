@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-06-12 — Correction: separate data from assumptions in playbook
+**Asked:** (Pushback) Explain the smaller-guys method plainly; stop stating unverified
+industry assumptions ("PF locked", "EOS RFP-winnable", "no incumbent") as conclusions;
+think it through and investigate instead.
+**Done:** Playbook fixed — §D now lists the 6-step method explicitly and flags surfaced
+names as *unidentified* pending investigation; §2b incumbent claims relabeled
+"⚠ HYPOTHESES, NOT DATA" with the verification path: (a) ask Elite partners who floors
+each chain today, (b) call the fingerprint architects (they write the spec, know the
+vendor), (c) GC lookup on sample projects via permits. Only velocity numbers are data.
+Standing rule going forward: every doc splits "data shows" vs "hypothesis ⚠"; methods
+written as numbered plain steps; jargon defined inline.
+**Next:** unchanged (backfill → extraction → partner package), plus: investigate the
+surfaced names (Devon Arnold etc.) properly before using them.
+
 ## 2026-06-12 — Emerging operators + big-8 qualification angles
 **Asked:** How to find smaller gym operators (grow-with targets); what to ask about the
 big 8 orgs given Elite does flooring AND equipment install; web app w/ filters confirmed
