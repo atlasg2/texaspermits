@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-06-12 — Migration 0002 applied + build order revised
+**Asked:** Build migration 0002. Then: do the daily engine / GitHub Actions LAST, and use
+the frontend-design skill for all UI.
+**Done:**
+- Wrote `supabase/migrations/0002_app.sql` and applied it (idempotent: ran migrate.py
+  twice, 2nd is a no-op). New tables: companies, project_companies (sourced relationships
+  w/ role+confidence+research_state), project_versions (content-hash snapshots),
+  project_changes, project_schedule, workspaces (seeded Elite + fitness lens jsonb),
+  inbox_items, lists (+seeded Watchlist/Follow-Up), list_items, notes. RLS on all:
+  authenticated reads everything, writes only notes/list_items/inbox_items; service-role
+  bypasses. Verified seeds + 10 tables + policies landed.
+- Revised build order in `V1_BUILD.md §7`: **daily engine + GitHub Actions is now LAST**
+  (app gets built/demoed on real data first; the demo's change-history & inbox come from
+  the backfilled project_changes, no live engine needed). **All UI built with the
+  frontend-design skill** — recorded as a hard requirement.
+**Next:** Task #2 — `scripts/build_companies.py`: populate companies + project_companies
+across the 95,877 projects; print dedupe clusters to sanity-check the normalizer.
+
+---
+
 ## 2026-06-12 — Consolidated V1 build plan (`docs/V1_BUILD.md`)
 **Asked:** Re-read `PLAN.md` + the two Codex proposals and give an updated plan to build.
 **Done:**

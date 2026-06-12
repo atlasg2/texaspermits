@@ -111,7 +111,8 @@ GitHub Actions cron ~06:00 CT (secrets in repo Actions secrets, not a Codespace)
    caught by the weekly sweep, not the daily one.
 
 ## 6. Workstream D — The app (`web/`, Next.js App Router + Tailwind on Vercel)
-Use the **frontend-design** skill for page quality. Pages, exactly per spec:
+**Build every page with the `frontend-design` skill** — this is a requirement, not a
+nicety. Pages, exactly per spec:
 
 - **Inbox** — new/changed cards: project · city · why-it-appeared · last change · sqft ·
   cost · completion, with **Review / Dismiss / Add-to-List**. Review marks it reviewed and
@@ -137,11 +138,22 @@ Use the **frontend-design** skill for page quality. Pages, exactly per spec:
   users may create custom lists.
 - **Auth** — Supabase magic link, middleware-gated, 3 allowlisted users, signups off.
 
-## 7. Build order (Nick's 1–10), with deploy mid-way
-1. Migrations (A) → 2. Company backfill (B) → 3. Daily engine rules (C, AI off) →
-4. Projects table → 5. Project detail → **deploy to Vercel here (demoable)** →
-6. Companies → 7. Views → 8. Lists → 9. Notes / @mentions →
-10. AI inbox summaries (feature-flagged, Claude API, language only).
+## 7. Build order (revised — daily engine LAST, frontend-design skill for all UI)
+The app gets built and demoable on real data first; the daily-refresh automation is the
+final piece. **Every UI page is built with the `frontend-design` skill** (no generic AI
+look). Order:
+1. Migrations (A) ✅ — `0002_app.sql` applied.
+2. Company backfill (B) — populate companies + project_companies from the 95,877 projects.
+3. **Projects table** (frontend-design) — the spine of the app.
+4. **Project detail** (frontend-design) — **deploy to Vercel here (demoable on real data)**.
+5. **Companies** tab + detail (frontend-design).
+6. **Views** + **Inbox** + **Lists** pages (frontend-design). For the demo, change-history
+   and inbox items come from the backfilled `project_changes` (status_history) — no live
+   engine needed yet.
+7. **Notes / @mentions** (frontend-design).
+8. **Daily engine (C)** — `daily_update.py` + GitHub Actions cron. Built LAST so the app is
+   already proven; this just keeps it fresh going forward.
+9. **AI inbox summaries** — feature-flagged, Claude API, language-only. Very last.
 
 ## 8. Verification (the demo that proves it)
 - Migrations run twice cleanly. Unit tests for name-normalization + inbox rules next to
