@@ -5,6 +5,30 @@
 
 ---
 
+## 2026-06-12 — Found TABS JSON search API; index-driven backfill for FY2023–2026
+**Asked:** Check how far the backfill got; find a better/faster way to complete. Scope:
+data through the past 3 years only (FY2023–2026, nothing earlier).
+**Done:**
+- Status check: the Jun 9 run died when the Codespace shut down. FY2026 complete
+  (18,642 projects), FY2025 ~25% (6,515 local / 6,139 in Supabase), Supabase total 24,781.
+- **Found `/TABS/Search/SearchProjects`** — the JSON endpoint behind the public search page.
+  POST with DataTables params + `ProjectNumber=TABS{year}` prefix filter; returns 100
+  rows/request (~1s) with ProjectId, status code, cost, dates, city/county codes, and exact
+  `recordsTotal` per year (FY2025 = 25,671 valid). No bulk dataset exists on data.texas.gov.
+- New `scripts/tabs_index.py`: pages that endpoint into SQLite `project_index` (status code
+  map 3001–3010, work-type map 9001–9005). A whole year indexes in ~2 min.
+- `tabs_scraper.py --index`: candidates come from `project_index` instead of probing every
+  seq 1→max — no more empty fetches (18% of FY2026 was empties) or max-seq binary search.
+  Falls back to seq scan if index is empty. Also sized the HTTP pool to worker count.
+- `run_backfill.sh` now builds the index first, then scrapes with `--index`.
+- Relaunched: `./run_backfill.sh 2023-2026 12` + sync watcher (5 min), both background.
+  Index immediately showed FY2026 grew to 18,933 (+291 new filings since Jun 9) — picked up
+  automatically. ETA ~3h for FY2025 remainder + FY2024 + FY2023.
+- Future win: the index endpoint makes status-change polling ~100× cheaper
+  (~260 requests/year vs 25k detail fetches) — this is the recurring-watch mechanism.
+**Next:** verify counts when the run finishes; wire index-based status polling into the
+recurring lead-detection job; app.
+
 ## 2026-06-09 — Resume FY2026 + continue into FY2025
 **Asked:** Resume scraping all of 2026; then keep going with the next year too.
 **Done:**

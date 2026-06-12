@@ -15,8 +15,12 @@ LOG="data/backfill.log"
 mkdir -p data
 echo "=== backfill start $(date) | years=$YEARS workers=$WORKERS ===" | tee -a "$LOG"
 
+# Build/refresh the valid-project-number index first (fast: 100 rows/request).
+# The scraper then fetches only known-valid numbers — no empty-seq probing.
+python3 scripts/tabs_index.py --years "$YEARS" 2>&1 | tee -a "$LOG"
+
 for i in $(seq 1 100); do
-  python3 scraper/tabs_scraper.py --years "$YEARS" --order newest --workers "$WORKERS" 2>&1 | tee -a "$LOG"
+  python3 scraper/tabs_scraper.py --years "$YEARS" --order newest --workers "$WORKERS" --index 2>&1 | tee -a "$LOG"
   if tail -n 3 "$LOG" | grep -q "Nothing to do"; then
     break
   fi

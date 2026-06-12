@@ -97,6 +97,20 @@ CREATE INDEX IF NOT EXISTS ix_projects_county ON projects(location_county);
 """
 
 
+def load_index_pns(conn, year):
+    """Valid project numbers for a year from project_index (see scripts/tabs_index.py),
+    newest first. Empty list if the index hasn't been built for that year."""
+    try:
+        rows = conn.execute(
+            "SELECT project_number FROM project_index WHERE project_number LIKE ? "
+            "ORDER BY project_number DESC",
+            (f"TABS{year}%",),
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return []
+    return [pn for (pn,) in rows]
+
+
 # ----------------------------- parsing ----------------------------- #
 def clean(s):
     return re.sub(r"\s+", " ", (s or "").strip())
@@ -315,6 +329,11 @@ def main():
         "--order", choices=["newest", "oldest"], default="newest",
         help="newest = freshest fiscal year + latest filings first (default)",
     )
+    ap.add_argument(
+        "--index", action="store_true",
+        help="use project_index (built by scripts/tabs_index.py) as the candidate "
+             "list — fetches only known-valid numbers, no empty-seq probing",
+    )
     args = ap.parse_args()
 
     os.makedirs(os.path.dirname(args.db) or ".", exist_ok=True)
@@ -323,6 +342,10 @@ def main():
     conn.commit()
 
     session = requests.Session()
+    adapter = requests.adapters.HTTPAdapter(
+        pool_connections=args.workers, pool_maxsize=args.workers
+    )
+    session.mount("https://", adapter)
     years = sorted(set(parse_years(args.years)), reverse=(args.order == "newest"))
     done = load_done(conn, years)
 
@@ -331,6 +354,16 @@ def main():
     # recent registrations land first and we don't scan thousands of empties.
     candidates = []
     for y in years:
+        if args.index:
+            pns = load_index_pns(conn, y)
+            if pns:
+                print(f"  FY{y}: {len(pns):,} valid numbers from project_index")
+                if args.order == "oldest":
+                    pns = pns[::-1]
+                candidates.extend(pn for pn in pns if pn not in done)
+                continue
+            print(f"  FY{y}: project_index empty — falling back to sequence scan "
+                  f"(run scripts/tabs_index.py)")
         if args.order == "newest":
             top = detect_max_seq(session, y, args.max_seq)
             seqs = range(top, 0, -1)
