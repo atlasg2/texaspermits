@@ -5,6 +5,33 @@
 
 ---
 
+## 2026-06-12 — Platform doc: generic core + per-company workspaces
+**Asked:** Architecture for "useful to many companies, custom for Elite": daily-updating
+core, table views w/ stage/late filters, per-account filters (e.g. Elite min-sqft),
+entity tabs (Projects/Architects/Owners w/ shell-corp hunting), clickable throughout,
+"add to a thing", options for the daily run.
+**Done:** `docs/PLATFORM.md` — core (daily index-diff engine, entity graph w/ name
+normalization, monitor rules, search, research queue) vs workspace config (vertical
+dictionary, size floor, saved views, watchlists, alert rules, entity tags; Elite =
+first config row, never a fork). Tabs: Projects·Monitor·Architects·Owners·Operators·
+Filers/RAS·GCs·Lists. Owners tab shell signals (address-like LLC names, single-project
+owners, shared mailing address/phone grouping; TX SOS/OpenCorporates later). Daily-run
+options compared: GitHub Actions cron recommended (free, serverless, survives sleep)
+vs pg_cron/VPS/manual. Deleted my redundant APP_SPEC.md draft (other session's
+PROPOSAL_EXPLORER.md rewrite is the page-level blueprint; PLATFORM.md generalizes it).
+**Next:** approve → daily engine on Actions first, then Projects+Monitor tabs.
+
+## 2026-06-12 — Expanded software blueprint: tabs, pages, and connections
+**Asked:** Put the proposal in a document and explain clearly what tabs/pages the
+software has and how projects, accounts, people, GCs, research, and delay monitoring
+connect.
+**Done:** Replaced `docs/PROPOSAL_EXPLORER.md` with a full product blueprint. It now
+defines five primary tabs (Projects, Monitor, Accounts, Directory, Research), every
+major table/detail page, click behavior, saved views, evidence-backed GC entry, schedule
+flags plus field confirmation, account relationship interpretation, data layers, an
+explicit record-connection diagram, phased build order, and a plain success test.
+**Next:** Review/approve this information architecture before designing or building UI.
+
 ## 2026-06-12 — Proposal: explorer + GC column + slip detection
 **Asked:** Written proposal (not execution): interactive explorer w/ clickable entity
 history + search by any name; blank general_contractor column filled via permits;
