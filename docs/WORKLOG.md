@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-06-12 — Project detail page + history backfill (task #5)
+**Asked:** Build the project detail page (Overview/Changes/Connections/Notes/Lists).
+**Done:**
+- Migration 0004: idempotent backfill of `project_versions` (95,877 baseline snapshots,
+  content_hash = raw_hash) and `project_changes` (191,754 = one new_project + one status
+  event per project, from status_history). Honest start point; field-level changes accrue
+  daily from here.
+- `/projects/[project_number]` dossier page: header (status+schedule badges, TABS source
+  link), Overview facts grid (type/funds/sqft/cost/dates/county/address/full scope),
+  Changes timeline (from project_changes), right rail Connections grouped by role
+  (clickable company cards w/ phone+address), GC shown as explicit "Unknown — not in the
+  public record", Filer as text. Lists/Notes stubbed with empty states (tasks #7/#8).
+- Verified live: CLUB4 Plano TABS2026018330 renders title "Club 4 Fitness Plano 14th",
+  Barron(architect)/14SM TT Owner LLC(owner)/Kenneth Herring(tenant), sqft 58,587, Review
+  Complete, source link, changes. tsc clean.
+**Next:** Deploy to Vercel (build order step 4 = demoable), then Companies tab (#6).
+
+---
+
 ## 2026-06-12 — Web app scaffold + auth + Projects table (task #4)
 **Asked:** Build the app shell, magic-link auth, and the Projects table — with the
 frontend-design skill.
