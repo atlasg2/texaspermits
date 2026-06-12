@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-06-12 — Company backfill done (73,490 companies, 193,118 links)
+**Asked:** Build + run the company extraction backfill (task #2).
+**Done:**
+- 0003 migration: company identity = normalized name alone (dropped the (norm,kind) key),
+  so one company can be owner on A and tenant on B. Applied.
+- `scripts/build_companies.py`: normalize = lowercase + collapse non-alphanumeric runs +
+  trim. Dry-run showed strong merges (HKS 15 spellings, Chick-fil-A 14, Kimley-Horn 10).
+  Ran for real: **73,490 companies, 193,118 project_companies links** across 95,877
+  projects. Idempotent (ON CONFLICT DO NOTHING both tables).
+- Verified: Dean Brent Barron Architect → the 4 CLUB4 boxes (Plano/Bryan/El Paso/Grapevine,
+  55–63k sqft, correct values); 665 companies hold >1 role; CLUB4 Plano TABS2026018330
+  links Barron(architect)/14SM TT Owner LLC(owner)/Kenneth Herring(tenant). Demo path intact.
+**Next:** Task #4 — scaffold Next.js app in `web/` (frontend-design skill) + Supabase
+magic-link auth + the Projects table.
+
+---
+
 ## 2026-06-12 — Migration 0002 applied + build order revised
 **Asked:** Build migration 0002. Then: do the daily engine / GitHub Actions LAST, and use
 the frontend-design skill for all UI.
