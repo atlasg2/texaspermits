@@ -5,6 +5,34 @@
 
 ---
 
+## 2026-06-12 — Views + Inbox + Lists (task #7) + boundary fix
+**Asked:** Build Views, Inbox, Lists; show the app on a link; commit after.
+**Done:**
+- **Lens infra**: migration 0007 `workspace_matches` + `scripts/apply_lens.py` (reads
+  include/exclude keywords from `workspaces.lens` in the DB — not hardcoded). Matched
+  **1,784** fitness projects; all 3 CLUB4 demo projects in, Sam's Club excluded (0 leak).
+  Lens is intentionally broad (Codex: start broad, tighten from review).
+- **Company rollups**: migration 0005 `company_stats` materialized view (per-company
+  project/active counts, cities, roles) + 0006 `company_connections(cid)` RPC (2-hop
+  shared-project relationships). Powered the Companies tab from task #6.
+- **Views**: 4 system views (New/Changed, Active, Recently Completed, Possibly Late) with
+  live counts + sqft over/under chips + the "TABS dates are estimates" caveat. Verified
+  **Possibly Late catches CLUB4 Montwood TABS2025022210** (completion 2025-12-17 passed).
+- **Inbox**: `scripts/seed_inbox.py` seeded 80 recent lens-matched filings as inbox_items;
+  cards show why-it-appeared bullets + facts + Review/+Watchlist/+Follow-Up/Dismiss
+  (server actions in `lib/actions.ts`).
+- **Lists**: Watchlist + Follow-Up landing + detail; add/remove, Follow-Up assignee/due/
+  resolve. Verified add→render (CLUB4 Plano on Watchlist).
+- **Boundary fix**: client toolbars imported constants from server data modules, dragging
+  the service-role admin client into the browser bundle ("supabaseKey is required" at
+  runtime). Moved STATUS/WORK/ROLE constants to client-safe `lib/filters.ts`. **Production
+  `next build` now passes clean** (all 14 routes) — that's the check that catches this.
+- **Dev preview**: `DEV_NO_AUTH=true` (web/.env.local, gitignored) bypasses login for local
+  viewing; code path is env-gated so production stays auth-gated.
+**Next:** Task #8 — team notes + @mentions, then AI inbox summaries (flagged). Then deploy.
+
+---
+
 ## 2026-06-12 — Project detail page + history backfill (task #5)
 **Asked:** Build the project detail page (Overview/Changes/Connections/Notes/Lists).
 **Done:**

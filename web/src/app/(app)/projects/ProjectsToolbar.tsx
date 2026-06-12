@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { STATUS_OPTIONS, WORK_OPTIONS } from "@/lib/data/projects";
+import { STATUS_OPTIONS, WORK_OPTIONS } from "@/lib/filters";
 
 export function ProjectsToolbar() {
   const router = useRouter();

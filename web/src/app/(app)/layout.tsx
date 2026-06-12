@@ -7,11 +7,13 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const devNoAuth = process.env.DEV_NO_AUTH === "true";
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  if (!user && !devNoAuth) redirect("/login");
+  const email = user?.email ?? "dev preview";
 
   return (
     <div className="grid min-h-dvh grid-cols-[216px_1fr]">
@@ -37,7 +39,7 @@ export default async function AppLayout({
 
         <div className="mt-auto border-t border-line px-3 py-3">
           <div className="mb-2 truncate font-mono text-[11px] text-ink-faint">
-            {user.email}
+            {email}
           </div>
           <form action="/auth/signout" method="post">
             <button
