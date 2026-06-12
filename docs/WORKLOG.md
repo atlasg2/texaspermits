@@ -5,6 +5,31 @@
 
 ---
 
+## 2026-06-12 — Deleted v0 web UI; CLUB4/gym deal-finding analysis
+**Asked:** Delete the old web design entirely (no record, no bias for future design work).
+Research Club 4 Fitness (Elite's flooring client). Explore the data for deal-finding angles:
+gyms under construction, architects, shell-corp identification, franchise vs corporate.
+**Done:**
+- Deleted `web/` + `docs/UI.md` (never committed — zero record remains).
+- CLUB4 Fitness: family-owned/operated since 2002 (Mike Elinski), 40+ corporate locations
+  (not franchise) across the Southeast incl. TX. Corporate model ⇒ one relationship covers
+  all new sites.
+- **Found live CLUB4 leads in our data**: El Paso (TABS2025022210, $3.5M, Review Complete),
+  Bryan (TABS2026003898, $3.5M), Plano (TABS2026018330, $3M, reg. 4/22/2026). All three
+  use **Dean Brent Barron Architect** — CLUB4's TX architect of record. Two have shell-LLC
+  owners (14SM TT Owner LLC, 30x30 Townshire Partners LLC); the tenant field + repeat
+  architect unmask the brand.
+- Brand→architect fingerprints confirmed: EOS Fitness→James E. Stroh; Crunch→JPlus/
+  Phillips Partnership; Planet Fitness→MJM Architects. Gym projects registered *this week*:
+  Crunch McKinney 6/8, Crunch Royse City $4.9M 6/5, EOS Little Elm $6.4M + Plano $5.6M 6/5.
+- Key data lessons: tenant_name (not owner) carries gym brands (gyms lease; owners are
+  SPE shells); '%club 4%' collides with Sam's Club store numbers — brand matching needs
+  curated keyword sets per vertical.
+- Backfill meanwhile: index phase done for all 4 years; detail scrape running —
+  70,148 pages, 100% valid (zero waste vs 18% empties before), ~4h ETA.
+**Next:** lead-lens design (vertical keyword sets + stage + cost filters); daily
+GitHub Actions watcher; architect-fingerprint table.
+
 ## 2026-06-12 — Found TABS JSON search API; index-driven backfill for FY2023–2026
 **Asked:** Check how far the backfill got; find a better/faster way to complete. Scope:
 data through the past 3 years only (FY2023–2026, nothing earlier).
