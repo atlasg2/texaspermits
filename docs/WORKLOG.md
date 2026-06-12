@@ -5,6 +5,26 @@
 
 ---
 
+## 2026-06-12 — Consolidated V1 build plan (`docs/V1_BUILD.md`)
+**Asked:** Re-read `PLAN.md` + the two Codex proposals and give an updated plan to build.
+**Done:**
+- Verified data ground: Supabase now **95,877 projects** (FY2023 25,888 · FY2024 25,381 ·
+  FY2025 25,671 · FY2026 18,937), **all** rows have corrected sqft, status_history fully
+  backfilled (95,877). Cleanup chain landed ~189 more filings than the 95,688 snapshot.
+- Found our approved plan and `CODEX_V1_PROPOSAL.md` independently match — same 5 tabs,
+  same rules-decide/AI-writes split, same Views incl. Possibly-Late. Confirms the shape.
+- Pulled 3 cheap-now/expensive-later upgrades from `CODEX_PRODUCT_PROPOSAL.md` into the
+  V1 schema: (1) `project_versions` + content_hash → derive `project_changes`;
+  (2) companies as sourced relationships (role/source/confidence/is_primary), not fixed
+  columns; (3) GC research-state + computed schedule-state enums. Everything else from the
+  big proposal explicitly deferred (§9).
+- Wrote `docs/V1_BUILD.md` = the single doc we build from (workstreams A–D, build order,
+  verification demo path, deferred list).
+**Next:** Task #1 — write `supabase/migrations/0002_app.sql` per §3, apply, run twice for
+idempotency. Then company backfill (B).
+
+---
+
 ## 2026-06-12 — ✅ BACKFILL COMPLETE: FY2023–2026, 95,688 projects in Supabase
 **Asked:** Finish the 36-month backfill; fix sqft at the end.
 **Done:**
