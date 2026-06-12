@@ -39,18 +39,109 @@ A new customer is a new config row + maybe a new keyword dictionary — never ne
 the app adds it to a named list with a note. Lists are the seed of the CRM — they hold
 follow-ups without us building a CRM yet.
 
-## 4. Tabs (v1) — entity tabs, each clickable through
+## 4. Tabs (v1) — exactly what's on each and where every click goes
 ```
 Projects · Monitor · Architects · Owners · Operators · Filers/RAS · GCs · Lists
 ```
-- **Projects** — the main table (columns/filters per PROPOSAL_EXPLORER.md §3).
-- **Monitor** — active projects + schedule health (§5 there).
-- **Architects / Operators / Filers·RAS / GCs** — same template: table of entities with
-  project counts, brands served, activity trend; click → full profile (their projects,
-  who they repeatedly work with, contacts).
-- **Owners** — same template PLUS shell-corp signals (below).
-- **Lists** — the watchlists.
-Every name inside any tab links to its profile; profiles link back to projects.
+
+### 4.1 PROJECTS (home tab — one row per project)
+Columns: `⭐ | health flag | TABS stage | brand/account | project name | city | county |
+work type (new/conversion/remodel) | sqft | est. start | est. completion | architect |
+GC (blank until researched) | tenant | owner | filer | registered date`
+Filters (top bar): stage · work type · sqft range · county/metro · registered-date range ·
+health flag · brand · "new this week" · "status changed recently" · "missing GC"
+Clicks:
+- project name → **Project detail page** (full record, status timeline, slip math,
+  people cards, notes)
+- architect → that firm's profile (Architects tab template)
+- owner → owner profile (Owners tab) · tenant → operator profile (Operators tab)
+- filer → filer profile · GC (if filled) → GC profile
+- blank GC cell → "research this" → creates a task (shows on the GC tab's queue)
+- ⭐ → add to a watchlist (Lists tab)
+- health flag → Project detail, scrolled to the schedule section
+
+### 4.2 MONITOR (the daily worry-list — active projects only)
+Columns: `health (possibly late / severely late / stalled start / active / upcoming) |
+project | brand | city | est. start | est. completion | days past completion |
+current stage | last status change | field confirmation | next check date`
+Sorted worst-first. Same click rules as Projects (every name is a link).
+Special here: **field confirmation** — a partner can mark "confirmed late / on time /
+paused" with a note ("CEO onsite"); that overrides the computed guess and is shown
+with who confirmed and when.
+Connects to: Projects (same rows, different lens), Lists (⭐), Alerts digest (any
+health change emits an alert).
+
+### 4.3 ARCHITECTS (one row per design firm, names normalized)
+Columns: `firm | total projects | active projects | brands served | repeat partners
+(filer/RAS/GC most seen with) | typical sqft band | counties | last registration`
+Clicks:
+- firm name → **Architect profile**: all their projects (a mini Projects table,
+  pre-filtered), brands breakdown, who they repeatedly file/build with, contact info,
+  notes. Every project row and partner name clicks onward.
+- any brand chip → that Operator profile · any count → the filtered project list
+Why this tab exists: architects are the brand fingerprints (Barron→CLUB4 pattern) and
+the "get specified" sales channel.
+
+### 4.4 OWNERS (one row per owner entity + shell detection)
+Columns: `owner | shell score ⚠ | projects | shared-address group (N LLCs) |
+tenant overlap (same as tenant? y/n) | cities | work types | phone`
+Clicks:
+- owner name → **Owner profile**: their projects, the shell evidence list (which of
+  the 5 signals fired, §5), and — the key link — "**N other LLCs at this mailing
+  address →**" which opens the grouped real-developer view.
+- shared-address group → that group view (all sibling LLCs + all their projects
+  together = the real account)
+Why: stop chasing landlords; find the real developer behind serial shells.
+
+### 4.5 OPERATORS (brands & tenants — one row per operating company)
+Columns: `operator | type (corporate / franchisee / unknown ⚠) | projects | active |
+12-mo velocity ▲▼ | crew consistency (tight/loose) | typical sqft | main architect |
+main GC (when known) | metros`
+Clicks:
+- operator → **Operator profile**: pipeline (their projects), repeated relationships
+  (architects/GCs/filers with counts), build pattern (conversion vs ground-up),
+  buying-process notes (evidence-based, unknowns listed), watch-triggers.
+- main architect / main GC → those profiles
+Why: this is the account/lead view — volume × consistency × growth lives here.
+
+### 4.6 FILERS / RAS (who submits & reviews the paperwork)
+Columns: `name | role (filer / RAS) | projects | brands seen with | repeat architects |
+counties | phone`
+Clicks: name → profile (same template: their projects + co-occurring entities).
+Why: filers and RAS firms repeat across a chain's projects — a second and third
+fingerprint to identify shell-owned projects (⚠ test on 3+ brands first).
+
+### 4.7 GCs (starts mostly empty — fills via research)
+Columns: `GC | confirmed projects | operators served | architects seen with |
+work types | metros | source coverage (how many of their projects have evidence)`
+Plus the **research queue** on this tab: every active project with a blank GC,
+ordered by priority (watchlisted first), each linking to its permit-lookup task;
+a filled answer must carry `gc_source` (permit #/portal/vendor).
+Clicks: GC → profile · queue row → the project + its task.
+
+### 4.8 LISTS (watchlists — the "add to a thing")
+Each list = name + rows (projects or entities) + per-row note + who added it + date.
+Defaults for Elite: "Chasing now", "CLUB4 sites", "Architect targets".
+Clicks: any row → its project/profile page. Any status change or new flag on a
+watchlisted item automatically lands in the Alerts digest.
+
+### How the tabs connect (the loop you'll actually walk)
+```
+PROJECTS:  see "EOS Fitness, Little Elm, Registered 6/5"
+   └─ click architect "James E. Stroh"
+ARCHITECTS profile:  31 projects, 24 = EOS, repeat filer = (name)
+   └─ click brand chip "EOS"
+OPERATORS profile (EOS):  8 active TX projects, tight crew, velocity ▲
+   └─ click "main GC: unknown — 8 projects missing GC → research"
+GCs tab queue:  8 permit-lookup tasks created
+   └─ first one filled (with permit # as source)
+GC profile:  "XYZ Builders — 3 confirmed EOS projects"
+   └─ ⭐ add XYZ Builders + the 8 projects to list "EOS push"
+LISTS:  "EOS push" — now every status change on those projects alerts you
+MONITOR:  one of them goes ⚑ possibly-late → call with the rescue pitch
+```
+Rule for every tab: **no dead ends** — every name, count, chip, and flag is a link;
+anywhere you see a fact, one click shows the records behind it.
 
 ## 5. Owners tab: hunting shell corps
 Computed signals, each shown with its evidence, combined into a "likely shell (SPE)"
