@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-06-12 — ✅ BACKFILL COMPLETE: FY2023–2026, 95,688 projects in Supabase
+**Asked:** Finish the 36-month backfill; fix sqft at the end.
+**Done:**
+- Backfill ALL DONE 05:25 UTC: 70,148 detail pages fetched this run (zero wasted —
+  index-driven), 24 errors auto-retried, final sync upserted **95,688 projects**.
+  Local: FY2026 18,848 · FY2025 25,661 · FY2024 25,371 · FY2023 ~25,808.
+- Ran repair_square_footage.py: **50,324 sqft values corrected** from raw strings;
+  cost recompute: only 3 rows needed fixing. Tests pass (4/4).
+- Committed the parallel Codex session's parser fix + repair script + tests + its
+  PROPOSAL_EXPLORER.md blueprint rewrite (681d059).
+- Launched final cleanup chain (background): index refresh (fills ~200 gap rows +
+  filings since 02:00) → catch-up scrape → full re-sync (pushes corrected numbers
+  to Supabase).
+**Next:** verify final counts vs API totals; re-run emerging-operators query with true
+sqft (correct the Devon Arnold claim); daily watcher on GitHub Actions; V1 app build.
+
 ## 2026-06-12 — PLATFORM.md v2: merged spec (Codex blueprint + platform plan)
 **Asked:** Liked the Codex doc (PROPOSAL_EXPLORER.md) more overall — esp. the
 work-queue/inbox idea — but it was hard to read; redo PLATFORM.md as a cleaner merged
