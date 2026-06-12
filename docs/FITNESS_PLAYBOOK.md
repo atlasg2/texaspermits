@@ -34,6 +34,15 @@ Three distinct buyer types, each needing a different sales motion:
 **Deprioritize**: small-box franchises (Anytime ~$95k tickets, Orangetheory, F45) —
 single-unit owners, small scope, high relationship cost per dollar.
 
+**D. Emerging operators (grow-with strategy).** Group gym projects by tenant/owner/contact
+name; exclude mega-brands + schools/cities; keep 2–5-project groups in the 5–80k sqft band.
+Partial data already surfaces: "Devon Arnold" (5 projects, 35–58k sqft, 5 metros),
+Jessica King (3, Houston/Dallas), Mike Manning (2×40k, Frisco) — these contact names ARE
+the construction leads. Velocity alert: 3rd registration in 12 months ⇒ they're scaling ⇒
+start the relationship. Win at 5 clubs, ride to 50 (CLUB4 was this in 2015). Cross-state
+check each name via Shovels/BuildZoom/LinkedIn. (Also: Life Time = 8 projects — add to
+brand dictionary.)
+
 ## 2. The plays (what Elite actually does with this)
 
 1. **The Live Board** — every gym project in Registered/Review stages right now, with
@@ -59,6 +68,23 @@ single-unit owners, small scope, high relationship cost per dollar.
 - **Owner-address clustering**: same mailing address across many LLCs = one developer.
 - **Geography**: metro heatmap; match against CLUB4/EOS/Crunch announced expansion areas.
 - **$/sqft distribution** per brand → estimate flooring scope from registration data.
+
+## 2b. Qualifying the big 8 — four questions per target
+Context: **Elite already does CLUB4's flooring nationwide** — CLUB4 is the reference
+client, not a target. For each other org:
+1. **How do they buy?** Through the GC's construction contract (⇒ need GC names, permit
+   bridge) or owner-direct as FF&E with the equipment (⇒ need their construction lead)?
+   Elite's combined flooring + equipment install is an owner-direct pitch: one vendor owns
+   the last 3 weeks before opening.
+2. **Incumbent risk.** Planet Fitness mandates equipment brands corporately (new builds
+   likely locked — target franchisee remodels instead). PE chains (EOS) RFP everything —
+   winnable on proof/price, and EOS is the highest-velocity TX builder in our data.
+   Founder/family chains buy on relationship — the CLUB4 reference lands hardest there.
+   New entrants (Amped) have no TX incumbent — first mover wins.
+3. **Velocity + geography from the data** — pitch the pipeline ("you have 4 sites in plan
+   review in DFW"), not the vendor list.
+4. **Remodel cycle.** Gym floors turn over every 5–8 yrs. `type_of_work=Renovation` on
+   existing gyms = a separate re-floor/re-equip lead stream, recurring and less contested.
 
 ## 3b. Square footage is the brand signature; cost is noise
 Estimated cost is self-reported and unreliable (all three CLUB4s = round $3–3.5M;

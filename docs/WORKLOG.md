@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-06-12 — Emerging operators + big-8 qualification angles
+**Asked:** How to find smaller gym operators (grow-with targets); what to ask about the
+big 8 orgs given Elite does flooring AND equipment install; web app w/ filters confirmed
+as direction.
+**Done:** Proved emerging-operator method on partial data (group by tenant/owner/contact,
+exclude brands+public, 2–5 projects, 5–80k sqft): surfaced Devon Arnold (5 projects,
+5 metros), Jessica King (3), Mike Manning (2), + Life Time (8 — add to brand dict).
+Added playbook §D (emerging operators, velocity alert: 3rd registration in 12mo) and
+§2b (big-8 qualification: how they buy GC vs owner-direct FF&E; incumbent risk — PF
+locked/EOS RFP-winnable/family=relationship/Amped=no incumbent; pitch-the-pipeline;
+renovation cycle as separate lead stream). Key context recorded: Elite already does
+CLUB4 flooring nationwide ⇒ reference client. Backfill ~10% (5.5k+/70,148, ETA ~3h).
+**Next:** backfill completes → full gym extraction FY2023–2026, partner package (live
+board + who-to-call + trends); then daily watcher (GitHub Actions); then web app design.
+
 ## 2026-06-12 — Fitness playbook v0 (targets, sqft lens, nationwide, GC bridge)
 **Asked:** Plan what to show Elite for fitness; who to target (franchise vs corporate);
 nationwide view once brand structure is learned; GC discovery (Shovels.ai/BuildZoom);
