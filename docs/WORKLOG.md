@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-06-12 — Proposal: explorer + GC column + slip detection
+**Asked:** Written proposal (not execution): interactive explorer w/ clickable entity
+history + search by any name; blank general_contractor column filled via permits;
+don't map gyms by developer (CLUB4 converts existing big boxes — all 3 projects are
+Renovation/Alteration); flag projects behind schedule from start/est-completion dates
+(known validation case: the current CLUB4 build Nick visited — CEO on site, badly late).
+**Done:** `docs/PROPOSAL_EXPLORER.md`: (A) data completion + gc column w/ gc_source
+labeling, free 10-project manual permit pilot before paying for Shovels; (B) Datasette
+internally first, partner app after — pipeline table, entity pages, builders page
+scored volume×stack-looseness×growth, search-everything; two build modes (conversion
+brands vs ground-up) + big-box-renovation lens ⚠ for unbranded conversions; (C) slip
+detection tiers (Past Due / Likely Slipping ⚠ / Severely Late) w/ honest caveats,
+validated against the known-late CLUB4 site; demo storyline + execution order.
+**Next:** backfill done → repairs → Datasette up → GC pilot → slip-flag prototype.
+
 ## 2026-06-12 — sqft parsing bug documented (docs/ISSUE_SQFT_NUM.md)
 **Asked:** Status check on backfill; document the square-footage finding + fix plan.
 **Done:** Backfill on track (20k/70,148 @ 6/s, ETA ~05:45 UTC; FY2025 done locally
