@@ -5,6 +5,33 @@
 
 ---
 
+## 2026-06-12 — Web app scaffold + auth + Projects table (task #4)
+**Asked:** Build the app shell, magic-link auth, and the Projects table — with the
+frontend-design skill.
+**Done:**
+- Next.js 16 (App Router, Turbopack) + Tailwind v4 in `web/`. Supabase clients: server
+  (cookie/session), admin (service-role for data), browser (login). Auth gating via
+  Next 16 `proxy.ts` (renamed from middleware) → unauth users to /login, verified 307.
+  Two magic-link landings: `/auth/callback` (PKCE, real email) + `/auth/confirm`
+  (token_hash). Sign-out route. Created Nick's auth user.
+- **Design language "Field Terminal"**: blueprint/industrial — warm paper, ink, deep
+  blueprint-blue primary, hi-vis amber for schedule risk, IBM Plex Sans+Mono, tabular
+  numerals, uppercase mono micro-labels. Design tokens in globals.css; reusable Badge,
+  PageHeader, Nav (5 tabs), AppShell sidebar.
+- **Projects table**: server-rendered from Supabase (admin), 50/page with exact count,
+  global search (project fields + company names), status/work-type filters, sortable
+  columns (sqft/cost/completion/changed), derived Schedule badge (incl. Possibly Late),
+  companies summary cell, clickable rows + company links. Placeholder pages for the other
+  4 tabs.
+- **Verified headlessly**: minted a session via admin generateLink → /auth/confirm →
+  /projects renders 200 with real data (95,877 count, 50 rows, company links, schedule
+  badges). Search confirmed working ("club 4" matches the Club 4 Fitness projects;
+  brand has a space — "club4" rightly returns nothing).
+**Next:** Task #5 — project detail page (Overview / Changes / Connections / Team Notes /
+Lists) at `/projects/[project_number]`.
+
+---
+
 ## 2026-06-12 — Company backfill done (73,490 companies, 193,118 links)
 **Asked:** Build + run the company extraction backfill (task #2).
 **Done:**

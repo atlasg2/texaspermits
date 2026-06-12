@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Field Terminal — design system
+   Blueprint/industrial: warm paper ground, ink text, a deep
+   blueprint-blue primary, hi-vis amber for schedule risk.
+   ============================================================ */
+@theme {
+  --color-paper: #efece4; /* app ground */
+  --color-surface: #faf8f3; /* cards / table */
+  --color-surface-2: #f4f1e9; /* zebra / hover */
+  --color-ink: #1a1916; /* primary text */
+  --color-ink-soft: #4d4b44; /* secondary text */
+  --color-ink-faint: #8a877c; /* labels, captions */
+  --color-line: #ddd9cd; /* hairlines */
+  --color-line-strong: #c8c3b4;
+
+  --color-blueprint: #1d4e89; /* primary accent */
+  --color-blueprint-bright: #2e6fd0; /* interactive */
+  --color-blueprint-wash: #e6edf6;
+
+  --color-amber: #b9791a; /* possibly late / caution */
+  --color-amber-wash: #f6ecd8;
+  --color-grass: #3c7a4e; /* active / on-track */
+  --color-grass-wash: #e4eee2;
+  --color-rust: #a63a2b; /* severe / dismiss */
+  --color-rust-wash: #f4e2dd;
+  --color-slate: #5c6470; /* complete / neutral */
+  --color-slate-wash: #e8e9ec;
+
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, monospace;
+
+  --radius: 3px;
+}
+
+html {
+  background: var(--color-paper);
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "cv05", "ss01";
+}
+
+/* Tabular figures everywhere data lives — columns must align. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+}
+
+/* Uppercase letter-spaced micro-label (blueprint annotation voice). */
+.label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  font-weight: 500;
+}
+
+/* Faint blueprint grid — used in the top bar / empty states. */
+.blueprint-grid {
+  background-image:
+    linear-gradient(to right, rgba(29, 78, 137, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(29, 78, 137, 0.06) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Thin custom scrollbar so dense tables feel engineered, not chunky. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
+
+::selection {
+  background: var(--color-blueprint);
+  color: #fff;
+}
