@@ -5,6 +5,29 @@
 
 ---
 
+## 2026-06-12 — Fitness playbook v0 (targets, sqft lens, nationwide, GC bridge)
+**Asked:** Plan what to show Elite for fitness; who to target (franchise vs corporate);
+nationwide view once brand structure is learned; GC discovery (Shovels.ai/BuildZoom);
+sqft filter (costs unreliable); norm: validate theories across multiple cases.
+**Done:** `docs/FITNESS_PLAYBOOK.md` —
+- Buyer taxonomy: corporate chains in TX expansion (EOS, CLUB4, Amped=new entrant, Fitness
+  Connection, Club Studio) / mega-franchisees (Crunch TX = CR Fitness ~100 clubs + 9 new TX
+  sites by EOY 2026, Undefeated Tribe 41→100 by 2028, Fitness Ventures 115 units — already
+  in our data as Crunch Odessa owner) / public ISD+muni gyms as separate lens. Small-box
+  franchises deprioritized.
+- **Sqft > cost, proven**: CLUB4 = tight 56–63k sqft box while costs flatline at round
+  $3–3.5M; Crunch same-size boxes report $1.2M–4.9M. Classify on sqft bands; outlier
+  bounds both fields. EOS now shows 8+ TX projects as FY2024 backfill lands.
+- Nationwide: TABS=TX lab to learn fingerprints; Shovels.ai (1,800+ jurisdictions, ~85% US
+  pop, API ~$599/mo) / BuildZoom amplify them nationally (search architect name → brand
+  buildouts in any state).
+- GC bridge: TABS lacks GC; city building permits name it. Lifecycle: registration (get
+  specified w/ architect) → status change (construction soon) → permit match (bid the GC).
+- Working rule added: every theory validated across ≥3 independent brands before it
+  drives outreach/product.
+**Next:** when backfill done — brand×quarter trends, fingerprint dictionary table,
+owner-address clustering, timing model; Shovels trial eval on ~20 known projects.
+
 ## 2026-06-12 — Deleted v0 web UI; CLUB4/gym deal-finding analysis
 **Asked:** Delete the old web design entirely (no record, no bias for future design work).
 Research Club 4 Fitness (Elite's flooring client). Explore the data for deal-finding angles:
