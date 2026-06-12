@@ -5,6 +5,18 @@
 
 ---
 
+## 2026-06-12 — sqft parsing bug documented (docs/ISSUE_SQFT_NUM.md)
+**Asked:** Status check on backfill; document the square-footage finding + fix plan.
+**Done:** Backfill on track (20k/70,148 @ 6/s, ETA ~05:45 UTC; FY2025 done locally
+25,661/25,671; Supabase 44,540). Documented the `to_int` bug: "40,000 ft 2" → 400002
+(ft² superscript baked into every square_footage_num). Fix is in scraper code but the
+running pass still writes old values; raw strings stored ⇒ repair = recompute, no
+re-scrape. Plan in `docs/ISSUE_SQFT_NUM.md`: fix_numeric_cols.py recompute → verify →
+re-sync → correct playbook (Devon Arnold actually ~3.5–5.8k sqft, not 35–58k) → to_int
+unit test. Supabase carries the same bad column (sync copies num directly — verified).
+**Next:** backfill completes → run the fix plan steps 1–5 → cleanup index pass →
+final count verification.
+
 ## 2026-06-12 — Correction: separate data from assumptions in playbook
 **Asked:** (Pushback) Explain the smaller-guys method plainly; stop stating unverified
 industry assumptions ("PF locked", "EOS RFP-winnable", "no incumbent") as conclusions;
