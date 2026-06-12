@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-06-12 — PLATFORM.md v2: merged spec (Codex blueprint + platform plan)
+**Asked:** Liked the Codex doc (PROPOSAL_EXPLORER.md) more overall — esp. the
+work-queue/inbox idea — but it was hard to read; redo PLATFORM.md as a cleaner merged
+version keeping the best of both.
+**Done:** Full rewrite of `docs/PLATFORM.md` as the working spec (declared: it wins on
+conflicts). Kept from Codex: the six questions, Route-to-Elite section, build-type-with-
+evidence, Monitor health states + field confirmation, account pattern interpretations
+in plain English (EOS worked example), Directory normalization, Find-GC workflow w/
+5-place auto-propagation + priority order, four data layers, V1/V2/V3, success test.
+Kept from mine: core-vs-workspace split (Elite = config row), shell-corp signals,
+GitHub Actions daily engine, Lists, no-dead-ends rule. New: **Inbox tab** — daily
+triage feed (new matches / status changes / flags / research tasks / watched updates),
+actionable per line, later becomes the email digest. Tabs now:
+Inbox·Projects·Monitor·Accounts·Directory·Research·Lists. Written in short plain
+sentences per Nick's readability feedback.
+**Next:** Nick approves spec → V1 build (after backfill repairs + daily engine).
+
 ## 2026-06-12 — Platform doc: generic core + per-company workspaces
 **Asked:** Architecture for "useful to many companies, custom for Elite": daily-updating
 core, table views w/ stage/late filters, per-account filters (e.g. Elite min-sqft),
