@@ -296,11 +296,17 @@ def upsert_project(conn, rec):
             )
 
 
-def load_done(conn, years):
+def load_done(conn, years, only_valid=False):
+    """Attempted numbers to skip. With only_valid (index mode), 'empty' attempts
+    are NOT skipped: a number that was empty during an earlier scan can become a
+    real project later, and the index proves it exists now — so re-fetch it."""
+    where = "project_number LIKE ?"
+    if only_valid:
+        where += " AND status='valid'"
     done = set()
     for y in years:
         for (pn,) in conn.execute(
-            "SELECT project_number FROM attempts WHERE project_number LIKE ?", (f"TABS{y}%",)
+            f"SELECT project_number FROM attempts WHERE {where}", (f"TABS{y}%",)
         ):
             done.add(pn)
     return done
@@ -347,7 +353,7 @@ def main():
     )
     session.mount("https://", adapter)
     years = sorted(set(parse_years(args.years)), reverse=(args.order == "newest"))
-    done = load_done(conn, years)
+    done = load_done(conn, years, only_valid=args.index)
 
     # Build candidate numbers in the requested order. For "newest" we detect each
     # year's real max sequence (a few seconds) and count DOWN from it, so the most
