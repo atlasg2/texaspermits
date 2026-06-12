@@ -15,6 +15,7 @@ building-permit API. See `docs/PLAN.md` for the full architecture.
 | Path | What |
 |---|---|
 | `docs/PLAN.md` | Architecture, decisions, data findings, the model & resumability answers |
+| `docs/PROPOSAL_EXPLORER.md` | Proposed software tabs, pages, workflows, and how all records connect |
 | `docs/WORKLOG.md` | Chronological progress log — **updated every prompt** so context is never lost |
 | `docs/DATA_MODEL.md` | Every field we extract + the status lifecycle |
 | `scrape_poc.py` | Proof-of-concept parser (validated on real records) |

@@ -122,8 +122,8 @@ def slug(label):
 
 
 def to_int(s):
-    digits = re.sub(r"[^\d]", "", s or "")
-    return int(digits) if digits else None
+    match = re.search(r"\d[\d,]*", s or "")
+    return int(match.group(0).replace(",", "")) if match else None
 
 
 def split_location(full):
