@@ -1,4 +1,4 @@
-# V1 Build — Gym Project Intelligence App (consolidated implementation plan)
+11/# V1 Build — Gym Project Intelligence App (consolidated implementation plan)
 
 > Merges the approved plan (`~/.claude/plans/...`), `CODEX_V1_PROPOSAL.md`, and the
 > worthwhile schema upgrades from `CODEX_PRODUCT_PROPOSAL.md`. This is the doc we build
@@ -142,18 +142,18 @@ nicety. Pages, exactly per spec:
 The app gets built and demoable on real data first; the daily-refresh automation is the
 final piece. **Every UI page is built with the `frontend-design` skill** (no generic AI
 look). Order:
-1. Migrations (A) ✅ — `0002_app.sql` applied.
-2. Company backfill (B) — populate companies + project_companies from the 95,877 projects.
-3. **Projects table** (frontend-design) — the spine of the app.
-4. **Project detail** (frontend-design) — **deploy to Vercel here (demoable on real data)**.
-5. **Companies** tab + detail (frontend-design).
-6. **Views** + **Inbox** + **Lists** pages (frontend-design). For the demo, change-history
-   and inbox items come from the backfilled `project_changes` (status_history) — no live
-   engine needed yet.
-7. **Notes / @mentions** (frontend-design).
-8. **Daily engine (C)** — `daily_update.py` + GitHub Actions cron. Built LAST so the app is
-   already proven; this just keeps it fresh going forward.
-9. **AI inbox summaries** — feature-flagged, Claude API, language-only. Very last.
+1. Migrations (A) ✅ — `0002_app.sql` applied (now through `0009`).
+2. Company backfill (B) ✅ — 73,490 companies + 193,118 project links.
+3. **Projects table** (frontend-design) ✅ — the spine of the app.
+4. **Project detail** (frontend-design) ✅ — deploy-to-Vercel point (confirm live).
+5. **Companies** tab + detail (frontend-design) ✅.
+6. **Views** + **Inbox** + **Lists** pages (frontend-design) ✅. Change-history + inbox come
+   from backfilled `project_changes` / `seed_inbox.py` stand-in — no live engine yet.
+7. **Notes / @mentions** (frontend-design) — ⏳ next up.
+8. **Daily engine (C)** — `daily_update.py` + GitHub Actions cron. ❌ **not built** — the
+   highest-value gap; until it runs, Inbox is stand-in data and status history accrues only
+   from manual syncs.
+9. **AI inbox summaries** — feature-flagged, Claude API, language-only. Very last. ❌
 
 ## 8. Verification (the demo that proves it)
 - Migrations run twice cleanly. Unit tests for name-normalization + inbox rules next to

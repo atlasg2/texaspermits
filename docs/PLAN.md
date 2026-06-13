@@ -41,19 +41,38 @@ start the daily scrape ASAP.
 
 Prime lead window for Elite: **Review Complete** (plans approved, heading to construction).
 
-## 5. Architecture
+## 5. Architecture (as built — current)
+> The detailed, current build spec is `docs/V1_BUILD.md`. This is the high-level shape.
+
 - **Backfill scraper** (`scraper/tabs_scraper.py`): enumerate numbers → fetch print view →
-  parse → store in SQLite. Resumable (see §7).
-- **Daily delta** (next): fetch new registrations in current FY + re-check non-terminal
-  projects; log status changes to `status_history`. Small/fast (minutes).
-- **Storage:** SQLite for the scrape (zero-config, durable, resumable). Migrate/sync to
-  **Postgres** for the app.
-- **App:** Custom **Next.js + Postgres** (chosen). Grid view → row click → detail drawer +
-  status timeline. Saved filters ("New this week", "Status changed in 7d", "Review Complete in DFW > $250k").
-- **User CRM state kept separate** from scraped facts (`user_project_state`: is_hidden, is_saved,
-  lead_stage, notes) so re-scrapes never clobber decisions. "Delete" = hide, never destroy.
-- **GC bridge:** address + architect → building-permit API (e.g. Shovels.ai) → GC.
-- **Enrichment:** Apollo for contact emails/direct dials on owner/architect/GC.
+  parse → store in SQLite. Resumable (see §7). **Done** — see §10.
+- **Sync to Postgres** (`scripts/sync_to_supabase.py`): SQLite scrape → Supabase. SQLite is
+  the durable scrape buffer; **Supabase/Postgres is the app's source of truth.**
+- **App:** Custom **Next.js 16 (App Router) + Tailwind v4 + Supabase**, in `web/`.
+  Five tabs: **Inbox · Projects · Companies · Views · Lists**. Magic-link auth,
+  middleware-gated, allowlisted users. Live and demoable on real data.
+- **Tenant-agnostic core (key decision):** Elite is one **workspace** with one **lens**
+  (include/exclude keywords stored in `workspaces.lens` in the DB — *not* in code). A
+  second customer = a new workspace row + lens, no code fork. Lens matching →
+  `workspace_matches` (migration 0007, `scripts/apply_lens.py`).
+- **The lead-flow model (how a project moves through the system):**
+  - **Views** = live, code-defined queries over the projects (New/Changed, Active,
+    Recently Completed, Possibly Late). The *system* surfaces candidates; nothing is stored.
+  - **Inbox** = the event/triage queue (`inbox_items`, state `new|reviewed|dismissed`):
+    new or changed lens-matched projects with why-it-appeared fact bullets.
+  - **Lists** = the **action layer** (`lists` / `list_items`): hand-curated, durable, and
+    already action-bearing (`note`, `assigned_to`, `due_date`, `resolved`). Watchlist +
+    Follow-Up ship by default; users can add custom lists.
+  - **Two exits from a view/inbox:** *promote* → add to a List (it's good), or *dismiss*
+    (not a fit). **Dismiss records a decision; it never deletes the project** — re-scrapes
+    must not resurrect judged items. *(Per-project dismissal state is a known gap — see §10.)*
+  - **Two list actions:** *resolved* (action done, keep for record) and *remove* (mistake /
+    went cold). Non-destructive everywhere.
+- **CRM-state separation:** a `user_project_state` table exists from the original schema
+  (0001/0002) but is **not used by the app** — the workspace/inbox/lists model above
+  superseded it. (Candidate for removal or repurposing as the dismissal store.)
+- **GC bridge (future):** address + architect → building-permit API (e.g. Shovels.ai) → GC.
+- **Enrichment (future):** Apollo for contact emails/direct dials on owner/architect/GC.
 
 ## 6. Normalization applied in the scraper
 - `ras_ras*` → `ras_number / ras_name / ras_address / ras_phone`.
@@ -91,9 +110,29 @@ Claude entirely and `python3 scraper/tabs_scraper.py` runs the same.
 | All 6 | ~1.9 hr | ~55 min |
 Backfill is one-time. Daily delta afterwards = minutes.
 
-## 10. Open decisions / next steps
-- [ ] Run backfill (how many years: FY2021–2025, or include partial FY2026?).
-- [ ] Build daily-delta job + `status_history` logging.
-- [ ] Postgres schema + Next.js scaffold.
-- [ ] GC permit-API integration (Shovels.ai or alt).
-- [ ] Apollo enrichment.
+## 10. Status & next steps (current — 2026-06-13)
+> Build-order detail + verification live in `docs/V1_BUILD.md §7`; turn-by-turn history in
+> `docs/WORKLOG.md`. This is the at-a-glance source of truth.
+
+**Done**
+- [x] Backfill — **95,877 projects** synced to Supabase (FY2023–FY2026 partial). sqft
+      repaired, `status_history` backfilled, `project_versions`/`project_changes` seeded.
+- [x] Company backfill — 73,490 companies, 193,118 project links + identity/dedupe.
+- [x] Postgres schema + Next.js app scaffold + magic-link auth (migrations 0001–0009).
+- [x] Lens infra — DB-driven keyword matching → `workspace_matches` (1,784 gym matches).
+- [x] App tabs: **Projects, Project detail, Companies, Views, Inbox, Lists** — live,
+      `next build` clean. (Inbox currently seeded by `seed_inbox.py` as a stand-in.)
+
+**Open — in priority order**
+- [ ] **Team Notes + @mentions** (V1_BUILD step 7) — next up.
+- [ ] **Daily engine** (V1_BUILD step 8) — `daily_update.py` + scheduled run.
+      ⚠ **NOT built yet** — no delta job, no cron/Action. The Inbox is stand-in data until
+      this exists. This is the highest-value gap: every day unrun is status history lost.
+- [ ] **Dismissal / triage state** — no per-project "dismissed" store yet, so views/inbox
+      can't durably drop judged projects (see §5 lead-flow model). Small migration:
+      `(workspace_id, project_number, state, reason, status_at_dismissal)`; ideally a
+      dismissal **expires when the project's status changes**.
+- [ ] **Deploy to Vercel** (preview exists in plan; confirm live).
+- [ ] AI inbox summaries — feature-flagged, language-only, last.
+- [ ] GC permit-API integration (Shovels.ai or alt) — deferred.
+- [ ] Apollo enrichment — deferred.

@@ -5,6 +5,32 @@
 
 ---
 
+## 2026-06-13 — Doc sync: PLAN/V1_BUILD made source-of-truth
+**Asked:** Discussed the view→list→action lead-flow model; then "is PLAN.md up to date?"
+and "update PLAN + WORKLOG so we have a source of truth going forward."
+**Audited (ground truth):**
+- **No daily-delta engine exists** — `scraper/tabs_scraper.py` is backfill-only;
+  `seed_inbox.py` is an explicit stand-in; no `daily_update.py`, no `.github/workflows`.
+  Confirmed the biggest open gap.
+- **`user_project_state` table exists (0001/0002) but the app never references it** — the
+  workspace/inbox/lists model superseded it. PLAN §5 had been describing the dead path.
+- Migrations are at **0009**; PLAN.md mentioned none past the originals. `V1_BUILD.md` was
+  the most current doc but its build-order checklist was un-ticked for done steps.
+**Done:**
+- **PLAN.md §5** rewritten to the as-built architecture (Next.js 16 + Supabase, 5 tabs,
+  DB-driven lens, the Views/Inbox/Lists lead-flow model incl. promote/dismiss + the
+  non-destructive rule). Noted `user_project_state` is vestigial.
+- **PLAN.md §10** replaced the all-unchecked wishlist with a real status snapshot: done
+  (backfill, companies, schema, lens, all app tabs) vs open in priority order — Notes/
+  @mentions, **daily engine (not built)**, **dismissal/triage state (schema gap)**, deploy,
+  AI summaries, GC/Apollo (deferred).
+- **V1_BUILD.md §7** build order ticked to match reality (1–6 ✅, 7 ⏳, 8/9 ❌).
+- Kept PLAN §2–4/6/7/9 as-is (verified source facts, not plans).
+**Next:** Team Notes + @mentions (V1_BUILD #7); then the daily engine (#8). Decide the
+dismissal-state migration before wiring view/inbox "dismiss" buttons.
+
+---
+
 ## 2026-06-12 — Views + Inbox + Lists (task #7) + boundary fix
 **Asked:** Build Views, Inbox, Lists; show the app on a link; commit after.
 **Done:**
