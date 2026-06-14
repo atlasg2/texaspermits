@@ -133,7 +133,8 @@ nicety. Pages, exactly per spec:
 - **Views** (system-defined; code + lens config, not user rows):
   *New/Changed Gym · Active Gym · Recently Completed Gym (90 days) · **Possibly Late Gym***
   (completion date passed, status not terminal — shown with the "TABS dates are estimates"
-  caveat). Sqft over/under is a **chip inside** a view, not its own view.
+  caveat). Each view supports global search, exact sqft minimum/maximum, reset/show-hidden,
+  and row actions to add/create a List or hide the project from that view.
 - **Lists** — Watchlist + Follow-Up (Follow-Up items have assignee + due date + resolved);
   users may create custom lists.
 - **Auth** — Supabase magic link, middleware-gated, 3 allowlisted users, signups off.

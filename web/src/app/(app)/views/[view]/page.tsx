@@ -2,15 +2,21 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/PageHeader";
 import { Pagination } from "@/components/Pagination";
+import { ViewFilters } from "@/components/ViewFilters";
 import { ProjectsTable } from "../../projects/ProjectsTable";
 import { getView, VIEWS, VIEW_PAGE, type ViewKey } from "@/lib/data/views";
+import { getLists } from "@/lib/data/lists";
 
 export const dynamic = "force-dynamic";
 
-const THRESHOLD = 40_000;
-
 function one(v: string | string[] | undefined) {
   return Array.isArray(v) ? v[0] : v;
+}
+
+function positiveInteger(value: string | undefined): number | undefined {
+  if (!value) return undefined;
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed >= 0 ? parsed : undefined;
 }
 
 export default async function ViewPage({
@@ -26,38 +32,33 @@ export default async function ViewPage({
   const sp = await searchParams;
 
   const page = Number(one(sp.page) ?? "1") || 1;
-  const sqft = one(sp.sqft) as "over" | "under" | undefined;
+  const sort = one(sp.sort) ?? "filed";
+  const basePath = `/views/${view}`;
+  const flat: Record<string, string> = {};
+  for (const [key, value] of Object.entries(sp)) {
+    const stringValue = one(value);
+    if (stringValue) flat[key] = stringValue;
+  }
 
-  const { rows, total } = await getView({
-    view: view as ViewKey,
-    page,
-    sqft: sqft === "over" || sqft === "under" ? sqft : undefined,
-    threshold: THRESHOLD,
-  });
+  const [{ rows, total, hiddenProjectNumbers }, lists] = await Promise.all([
+    getView({
+      view: view as ViewKey,
+      page,
+      q: one(sp.q),
+      minSqft: positiveInteger(one(sp.minSqft)),
+      maxSqft: positiveInteger(one(sp.maxSqft)),
+      includeHidden: one(sp.hidden) === "1",
+      sort,
+    }),
+    getLists(),
+  ]);
   const pages = Math.max(1, Math.ceil(total / VIEW_PAGE));
 
-  const chip = (key: "" | "over" | "under", label: string) => {
-    const active = (sqft ?? "") === key;
-    const qs = key ? `?sqft=${key}` : "";
-    return (
-      <Link
-        href={`/views/${view}${qs}`}
-        className={`rounded-[var(--radius)] border px-2.5 py-1.5 font-mono text-xs transition-colors ${
-          active
-            ? "border-blueprint bg-blueprint text-white"
-            : "border-line-strong bg-surface text-ink-soft hover:border-blueprint hover:text-blueprint"
-        }`}
-      >
-        {label}
-      </Link>
-    );
+  const hrefFor = (p: number) => {
+    const next = new URLSearchParams(flat);
+    next.set("page", String(p));
+    return `${basePath}?${next.toString()}`;
   };
-
-  const hrefFor = (p: number) =>
-    `/views/${view}?${new URLSearchParams({
-      ...(sqft ? { sqft } : {}),
-      page: String(p),
-    }).toString()}`;
 
   return (
     <div className="flex min-h-dvh flex-col">
@@ -65,13 +66,7 @@ export default async function ViewPage({
         eyebrow="View · the system finds it"
         title={def.label}
         count={`${total.toLocaleString()} projects`}
-      >
-        <div className="flex items-center gap-1.5">
-          {chip("", "All sizes")}
-          {chip("over", "≥ 40k sqft")}
-          {chip("under", "< 40k sqft")}
-        </div>
-      </PageHeader>
+      />
 
       {def.caveat && (
         <div className="mx-6 mt-4 rounded-[var(--radius)] border border-amber/30 bg-amber-wash px-4 py-2.5">
@@ -91,8 +86,23 @@ export default async function ViewPage({
         </Link>
       </div>
 
-      <div className="flex-1 px-3">
-        <ProjectsTable rows={rows} activeSort="" params={{}} />
+      <div className="flex-1 px-3 pb-3">
+        <div className="overflow-hidden rounded-lg border border-line bg-surface">
+          <ViewFilters
+            key={`${flat.q ?? ""}:${flat.minSqft ?? ""}:${flat.maxSqft ?? ""}:${flat.hidden ?? ""}`}
+            params={flat}
+            minimumFloor={view === "registered_10k" ? 10_000 : undefined}
+          />
+          <ProjectsTable
+            rows={rows}
+            activeSort={sort}
+            params={flat}
+            basePath={basePath}
+            viewKey={view}
+            lists={lists.map(({ id, name }) => ({ id, name }))}
+            hiddenProjectNumbers={hiddenProjectNumbers}
+          />
+        </div>
       </div>
 
       <Pagination

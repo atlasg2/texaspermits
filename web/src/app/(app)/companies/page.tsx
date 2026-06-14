@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/PageHeader";
 import { Badge } from "@/components/Badge";
+import {
+  DataTableFrame,
+  SortHead,
+  TableEmpty,
+} from "@/components/DataTable";
 import { Pagination } from "@/components/Pagination";
 import {
   getCompanies,
@@ -8,7 +13,7 @@ import {
   type CompanyRoleTab,
 } from "@/lib/data/companies";
 import { CompaniesToolbar } from "./CompaniesToolbar";
-import { DASH } from "@/lib/format";
+import { DASH, shortDate, sqft } from "@/lib/format";
 import type { Tone } from "@/lib/schedule";
 
 export const dynamic = "force-dynamic";
@@ -17,14 +22,12 @@ const ROLE_TONE: Record<string, Tone> = {
   owner: "slate",
   tenant: "blueprint",
   architect: "grass",
-  gc: "amber",
   filer: "neutral",
 };
 const ROLE_SHORT: Record<string, string> = {
   owner: "Owner",
-  tenant: "Tenant",
+  tenant: "Tenant / Operator",
   architect: "Architect",
-  gc: "GC",
   filer: "Filer",
 };
 
@@ -38,13 +41,24 @@ export default async function CompaniesPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const sp = await searchParams;
-  const role = (one(sp.role) ?? "all") as CompanyRoleTab;
+  const requestedRole = one(sp.role) ?? "all";
+  const role = (
+    ["all", "owner", "tenant", "architect"].includes(requestedRole)
+      ? requestedRole
+      : "all"
+  ) as CompanyRoleTab;
   const page = Number(one(sp.page) ?? "1") || 1;
+  const sort = one(sp.sort) ?? "projects";
 
   const { rows, total } = await getCompanies({
     role,
     q: one(sp.q),
-    sort: one(sp.sort),
+    activity: one(sp.activity),
+    recent: one(sp.recent),
+    minProjects: one(sp.minProjects),
+    minSqft: one(sp.minSqft),
+    market: one(sp.market),
+    sort,
     page,
   });
   const pages = Math.max(1, Math.ceil(total / COMPANIES_PAGE));
@@ -63,109 +77,142 @@ export default async function CompaniesPage({
   return (
     <div className="flex min-h-dvh flex-col">
       <PageHeader
-        eyebrow="Owners · Tenants · Architects · GCs"
         title="Companies"
         count={`${total.toLocaleString()} companies`}
-      >
-        <CompaniesToolbar activeRole={role} />
-      </PageHeader>
+      />
 
-      <div className="flex-1 px-3 py-2">
-        {role === "gc" ? (
-          <div className="blueprint-grid grid place-items-center py-24 text-center">
-            <div className="max-w-sm">
-              <div className="label mb-1">No general contractors yet</div>
-              <p className="text-sm text-ink-soft">
-                TABS never names the GC. This fills in once permit-based GC
-                discovery is added — a later phase.
-              </p>
-            </div>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-[13px]">
-              <thead>
-                <tr className="label border-b border-line-strong text-left">
-                  <th className="px-3 py-2 font-medium">Company</th>
-                  <th className="px-3 py-2 font-medium">Roles</th>
-                  <th className="px-3 py-2 text-right font-medium">Projects</th>
-                  <th className="px-3 py-2 text-right font-medium">Active</th>
-                  <th className="px-3 py-2 font-medium">Markets</th>
-                  <th className="px-3 py-2 font-medium">Recent</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((c) => (
+      <div className="flex-1 p-4">
+        <div className="overflow-hidden rounded-lg border border-line bg-surface">
+        <CompaniesToolbar activeRole={role} />
+        <DataTableFrame
+          empty={
+            !rows.length ? (
+              <TableEmpty message="Try a different role, market, or project filter." />
+            ) : undefined
+          }
+        >
+          <table className="w-full border-collapse text-[15px]">
+            <thead>
+              <tr className="label border-b border-line-strong text-left">
+                <SortHead
+                  basePath="/companies"
+                  col="name"
+                  label="Company"
+                  activeSort={sort}
+                  params={flat}
+                />
+                <th className="px-3 py-2 font-medium">Roles</th>
+                <SortHead
+                  basePath="/companies"
+                  col="projects"
+                  label="Projects"
+                  align="text-right"
+                  activeSort={sort}
+                  params={flat}
+                />
+                <SortHead
+                  basePath="/companies"
+                  col="open"
+                  label="Open"
+                  align="text-right"
+                  activeSort={sort}
+                  params={flat}
+                />
+                <SortHead
+                  basePath="/companies"
+                  col="behind"
+                  label="Behind"
+                  align="text-right"
+                  activeSort={sort}
+                  params={flat}
+                />
+                <SortHead
+                  basePath="/companies"
+                  col="largest"
+                  label="Largest Project"
+                  align="text-right"
+                  activeSort={sort}
+                  params={flat}
+                />
+                <SortHead
+                  basePath="/companies"
+                  col="filed"
+                  label="Last Filed"
+                  activeSort={sort}
+                  params={flat}
+                />
+                <th className="min-w-64 px-3 py-2 font-medium">Markets</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((company) => {
+                const roleQuery =
+                  role === "all" ? "" : `?companyRole=${role}`;
+                return (
                   <tr
-                    key={c.company_id}
+                    key={company.company_id}
                     className="group border-b border-line align-top transition-colors hover:bg-surface-2"
                   >
                     <td className="px-3 py-2.5">
                       <Link
-                        href={`/companies/${c.company_id}`}
+                        href={`/companies/${company.company_id}${roleQuery}`}
                         className="font-medium text-ink group-hover:text-blueprint"
                       >
-                        {c.canonical_name}
+                        {company.canonical_name}
                       </Link>
                     </td>
                     <td className="px-3 py-2.5">
                       <div className="flex flex-wrap gap-1">
-                        {c.roles.map((r) => (
-                          <Badge key={r} tone={ROLE_TONE[r] ?? "neutral"}>
-                            {ROLE_SHORT[r] ?? r}
+                        {company.roles.map((companyRole) => (
+                          <Badge
+                            key={companyRole}
+                            tone={ROLE_TONE[companyRole] ?? "neutral"}
+                          >
+                            {ROLE_SHORT[companyRole] ?? companyRole}
                           </Badge>
                         ))}
                       </div>
                     </td>
                     <td className="tnum px-3 py-2.5 text-right text-ink">
-                      {c.project_count.toLocaleString()}
+                      {company.project_count.toLocaleString()}
                     </td>
-                    <td className="tnum px-3 py-2.5 text-right text-ink-soft">
-                      {c.active_count.toLocaleString()}
+                    <td className="tnum px-3 py-2.5 text-right text-ink">
+                      {company.open_count.toLocaleString()}
                     </td>
-                    <td className="px-3 py-2.5 text-ink-soft">
-                      {c.cities && c.cities.length
-                        ? c.cities.slice(0, 3).join(", ") +
-                          (c.cities.length > 3 ? ` +${c.cities.length - 3}` : "")
+                    <td className="tnum px-3 py-2.5 text-right text-rust">
+                      {company.behind_count.toLocaleString()}
+                    </td>
+                    <td className="tnum px-3 py-2.5 text-right text-ink">
+                      {sqft(company.largest_project_sqft)}
+                    </td>
+                    <td className="tnum px-3 py-2.5 whitespace-nowrap text-ink">
+                      {shortDate(company.last_filed)}
+                    </td>
+                    <td className="px-3 py-2.5 text-ink">
+                      {company.cities?.length
+                        ? company.cities.slice(0, 4).join(", ") +
+                          (company.cities.length > 4
+                            ? ` +${company.cities.length - 4}`
+                            : "")
                         : DASH}
                     </td>
-                    <td className="px-3 py-2.5 text-[12px] text-ink-faint">
-                      {c.recent.length ? (
-                        <span className="line-clamp-1">
-                          {c.recent.join(" · ")}
-                        </span>
-                      ) : (
-                        DASH
-                      )}
-                    </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-            {!rows.length && (
-              <div className="blueprint-grid grid place-items-center py-24 text-center">
-                <div>
-                  <div className="label mb-1">No matches</div>
-                  <p className="text-sm text-ink-soft">
-                    Try a different search or sub-tab.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+                );
+              })}
+            </tbody>
+          </table>
+        </DataTableFrame>
+        </div>
       </div>
 
-      {role !== "gc" && (
-        <Pagination
-          page={page}
-          pages={pages}
-          total={total}
-          pageSize={COMPANIES_PAGE}
-          hrefFor={hrefFor}
-          unit="companies"
-        />
-      )}
+      <Pagination
+        page={page}
+        pages={pages}
+        total={total}
+        pageSize={COMPANIES_PAGE}
+        hrefFor={hrefFor}
+        unit="companies"
+      />
     </div>
   );
 }

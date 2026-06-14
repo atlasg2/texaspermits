@@ -5,7 +5,7 @@ import { Badge } from "@/components/Badge";
 import { getList } from "@/lib/data/lists";
 import { removeListItem, setListItemFields } from "@/lib/actions";
 import { statusTone } from "@/lib/schedule";
-import { shortDate, DASH } from "@/lib/format";
+import { DASH } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 

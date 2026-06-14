@@ -5,7 +5,7 @@
 *.key
 
 # data / scraper output
-data/
+/data/
 *.db
 *.db-wal
 *.db-shm

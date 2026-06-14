@@ -6,7 +6,7 @@ const TONE: Record<Tone, string> = {
   amber: "bg-amber-wash text-amber border-amber/25",
   rust: "bg-rust-wash text-rust border-rust/20",
   slate: "bg-slate-wash text-slate border-slate/20",
-  neutral: "bg-surface-2 text-ink-soft border-line-strong",
+  neutral: "bg-surface-2 text-ink border-line-strong",
 };
 
 export function Badge({
@@ -20,7 +20,7 @@ export function Badge({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-[var(--radius)] border px-1.5 py-0.5 font-mono text-[10.5px] font-medium tracking-wide ${TONE[tone]}`}
+      className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2 py-0.5 text-[12px] font-medium ${TONE[tone]}`}
     >
       {dot && (
         <span className="size-1.5 rounded-full bg-current opacity-80" />

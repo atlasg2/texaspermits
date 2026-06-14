@@ -2,36 +2,37 @@
 
 /* ============================================================
    Field Terminal — design system
-   Blueprint/industrial: warm paper ground, ink text, a deep
-   blueprint-blue primary, hi-vis amber for schedule risk.
+   Modern data tool: white surfaces on a soft cool ground,
+   near-black ink, one confident blue accent. Monospace is
+   reserved for numbers, dates, and IDs — never UI chrome.
    ============================================================ */
 @theme {
-  --color-paper: #efece4; /* app ground */
-  --color-surface: #faf8f3; /* cards / table */
-  --color-surface-2: #f4f1e9; /* zebra / hover */
-  --color-ink: #1a1916; /* primary text */
-  --color-ink-soft: #4d4b44; /* secondary text */
-  --color-ink-faint: #8a877c; /* labels, captions */
-  --color-line: #ddd9cd; /* hairlines */
-  --color-line-strong: #c8c3b4;
+  --color-paper: #f6f7f9; /* app ground */
+  --color-surface: #ffffff; /* cards / table */
+  --color-surface-2: #f1f3f5; /* zebra / hover */
+  --color-ink: #17181b; /* primary text */
+  --color-ink-soft: #45474d; /* secondary text */
+  --color-ink-faint: #797c84; /* labels, captions */
+  --color-line: #e8e9ed; /* hairlines */
+  --color-line-strong: #d5d7dd;
 
-  --color-blueprint: #1d4e89; /* primary accent */
-  --color-blueprint-bright: #2e6fd0; /* interactive */
-  --color-blueprint-wash: #e6edf6;
+  --color-blueprint: #2563eb; /* primary accent */
+  --color-blueprint-bright: #3b82f6; /* interactive */
+  --color-blueprint-wash: #eef3fe;
 
-  --color-amber: #b9791a; /* possibly late / caution */
-  --color-amber-wash: #f6ecd8;
-  --color-grass: #3c7a4e; /* active / on-track */
-  --color-grass-wash: #e4eee2;
-  --color-rust: #a63a2b; /* severe / dismiss */
-  --color-rust-wash: #f4e2dd;
-  --color-slate: #5c6470; /* complete / neutral */
-  --color-slate-wash: #e8e9ec;
+  --color-amber: #b45309; /* possibly late / caution */
+  --color-amber-wash: #fdf2e1;
+  --color-grass: #15803d; /* active / on-track */
+  --color-grass-wash: #e9f6ed;
+  --color-rust: #dc2626; /* severe / dismiss */
+  --color-rust-wash: #fdeaea;
+  --color-slate: #64748b; /* complete / neutral */
+  --color-slate-wash: #f1f4f8;
 
   --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-mono), ui-monospace, monospace;
 
-  --radius: 3px;
+  --radius: 6px;
 }
 
 html {
@@ -42,7 +43,9 @@ body {
   background: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
-  font-feature-settings: "cv05", "ss01";
+  font-size: 14.5px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* Tabular figures everywhere data lives — columns must align. */
@@ -51,21 +54,20 @@ body {
   font-family: var(--font-mono);
 }
 
-/* Uppercase letter-spaced micro-label (blueprint annotation voice). */
+/* Small, quiet field label — sentence case, no shouting. */
 .label {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-ink-faint);
+  font-size: 0.75rem;
   font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-ink-faint);
 }
 
-/* Faint blueprint grid — used in the top bar / empty states. */
+/* Faint grid — used in empty states. */
 .blueprint-grid {
   background-image:
-    linear-gradient(to right, rgba(29, 78, 137, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(29, 78, 137, 0.06) 1px, transparent 1px);
+    linear-gradient(to right, rgba(37, 99, 235, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(37, 99, 235, 0.05) 1px, transparent 1px);
   background-size: 22px 22px;
 }
 

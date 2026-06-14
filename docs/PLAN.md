@@ -57,7 +57,10 @@ Prime lead window for Elite: **Review Complete** (plans approved, heading to con
   `workspace_matches` (migration 0007, `scripts/apply_lens.py`).
 - **The lead-flow model (how a project moves through the system):**
   - **Views** = live, code-defined queries over the projects (New/Changed, Active,
-    Recently Completed, Possibly Late). The *system* surfaces candidates; nothing is stored.
+    Recently Completed, Possibly Late). The *system* surfaces candidates; filter choices
+    only refine the current result set. The future daily engine should create an Inbox
+    event when a project newly enters a view or materially changes while it still qualifies,
+    not copy the full view into the Inbox every day.
   - **Inbox** = the event/triage queue (`inbox_items`, state `new|reviewed|dismissed`):
     new or changed lens-matched projects with why-it-appeared fact bullets.
   - **Lists** = the **action layer** (`lists` / `list_items`): hand-curated, durable, and
@@ -65,12 +68,13 @@ Prime lead window for Elite: **Review Complete** (plans approved, heading to con
     Follow-Up ship by default; users can add custom lists.
   - **Two exits from a view/inbox:** *promote* → add to a List (it's good), or *dismiss*
     (not a fit). **Dismiss records a decision; it never deletes the project** — re-scrapes
-    must not resurrect judged items. *(Per-project dismissal state is a known gap — see §10.)*
+    must not resurrect judged items. View hides live in `project_view_state` and expire
+    naturally when the source status changes; Inbox dismissals remain event-specific.
   - **Two list actions:** *resolved* (action done, keep for record) and *remove* (mistake /
     went cold). Non-destructive everywhere.
-- **CRM-state separation:** a `user_project_state` table exists from the original schema
-  (0001/0002) but is **not used by the app** — the workspace/inbox/lists model above
-  superseded it. (Candidate for removal or repurposing as the dismissal store.)
+- **CRM-state separation:** `project_view_state`, `inbox_items`, and `list_items` hold
+  user/team decisions separately from scraped project facts. The original
+  `user_project_state` table still exists but is not used by the app.
 - **GC bridge (future):** address + architect → building-permit API (e.g. Shovels.ai) → GC.
 - **Enrichment (future):** Apollo for contact emails/direct dials on owner/architect/GC.
 
@@ -128,10 +132,8 @@ Backfill is one-time. Daily delta afterwards = minutes.
 - [ ] **Daily engine** (V1_BUILD step 8) — `daily_update.py` + scheduled run.
       ⚠ **NOT built yet** — no delta job, no cron/Action. The Inbox is stand-in data until
       this exists. This is the highest-value gap: every day unrun is status history lost.
-- [ ] **Dismissal / triage state** — no per-project "dismissed" store yet, so views/inbox
-      can't durably drop judged projects (see §5 lead-flow model). Small migration:
-      `(workspace_id, project_number, state, reason, status_at_dismissal)`; ideally a
-      dismissal **expires when the project's status changes**.
+- [x] **View dismissal / triage state** — migration 0010 adds workspace-and-view-scoped
+      `project_view_state`; hidden projects return when their source status changes.
 - [ ] **Deploy to Vercel** (preview exists in plan; confirm live).
 - [ ] AI inbox summaries — feature-flagged, language-only, last.
 - [ ] GC permit-API integration (Shovels.ai or alt) — deferred.

@@ -5,6 +5,33 @@
 
 ---
 
+## 2026-06-14 — View workflow: flexible sqft, search, lists, and durable hide
+**Asked:** Replace the rigid 10k/40k view chips with useful square-foot filtering and
+search; make it possible to reset the result set, add/create a List from a view, and hide
+projects. Clarify how Views, Inbox, and Lists should work together.
+**Done:**
+- Replaced fixed sqft chips with global search plus exact minimum/maximum sqft inputs,
+  Reset, and Show hidden. Search covers project/facility name, project number, city,
+  scope, and linked companies.
+- Added a row action dialog to add to any List, create a custom List and add immediately,
+  hide from the current view, or restore a hidden project.
+- Added/applied migration 0010 `project_view_state`, scoped by workspace + view. It records
+  source status at hide time, so a later status change makes the project eligible again.
+- Hardened server actions: auth is required outside local preview, list ownership is
+  checked, and current project status is read server-side.
+- Recorded the workflow contract: Views define qualification, Inbox should eventually
+  receive only new-entry/material-change events, and Lists are durable intentional work.
+- Also applied pending migration 0009 (company project-history RPC), which was already in
+  the worktree and had to run before 0010.
+**Verified:** ESLint, `tsc --noEmit`, production `next build`, and live Supabase rendering.
+Registered view rendered 2,472 projects; a 50k–60k + "fitness" query returned 3. Temporary
+hide verification changed 2,472 → 2,471, Show hidden returned 2,472, and cleanup restored
+the original state.
+**Next:** Build the daily delta engine so view-entry/status/schedule transitions create
+Inbox events automatically; current Inbox content is still seeded stand-in data.
+
+---
+
 ## 2026-06-13 — Doc sync: PLAN/V1_BUILD made source-of-truth
 **Asked:** Discussed the view→list→action lead-flow model; then "is PLAN.md up to date?"
 and "update PLAN + WORKLOG so we have a source of truth going forward."

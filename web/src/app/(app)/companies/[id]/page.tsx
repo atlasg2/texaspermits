@@ -1,19 +1,31 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/Badge";
-import { getCompany } from "@/lib/data/company";
-import { sqft, shortDate, DASH } from "@/lib/format";
-import { statusTone } from "@/lib/schedule";
+import { Pagination } from "@/components/Pagination";
+import { ProjectFilters } from "@/components/ProjectFilters";
+import { ProjectTable } from "@/components/ProjectTable";
+import {
+  COMPANY_PROJECTS_PAGE,
+  getCompanyConnections,
+  getCompanyProjects,
+  getCompanySummary,
+} from "@/lib/data/company";
+import { DASH, shortDate, sqft } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
-const ROLE_SHORT: Record<string, string> = {
+type SearchParams = Record<string, string | string[] | undefined>;
+
+const ROLE_LABEL: Record<string, string> = {
   owner: "Owner",
-  tenant: "Tenant",
+  tenant: "Tenant / Operator",
   architect: "Architect",
-  gc: "GC",
-  filer: "Filer",
 };
+
+function one(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
 
 function Section({
   title,
@@ -26,8 +38,8 @@ function Section({
 }) {
   return (
     <section className="rounded-[var(--radius)] border border-line bg-surface">
-      <div className="flex items-center justify-between border-b border-line px-4 py-2.5">
-        <h2 className="font-mono text-[12px] font-semibold tracking-wide text-ink">
+      <div className="flex items-center justify-between border-b border-line px-4 py-3">
+        <h2 className="font-mono text-[14px] font-semibold tracking-wide text-ink">
           {title}
         </h2>
         {meta && <span className="label">{meta}</span>}
@@ -37,217 +49,266 @@ function Section({
   );
 }
 
+async function ConnectedCompanies({ id }: { id: number }) {
+  const connections = (await getCompanyConnections(id)).filter((connection) =>
+    ["owner", "tenant", "architect"].includes(connection.role),
+  );
+
+  return (
+    <Section title="CONNECTED COMPANIES" meta="shared projects">
+      {connections.length ? (
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-[15px]">
+            <thead>
+              <tr className="label border-b border-line text-left">
+                <th className="px-3 py-2 font-medium">Company</th>
+                <th className="px-3 py-2 font-medium">Role</th>
+                <th className="px-3 py-2 text-right font-medium">Shared</th>
+              </tr>
+            </thead>
+            <tbody>
+              {connections.map((connection) => (
+                <tr
+                  key={`${connection.company_id}-${connection.role}`}
+                  className="group border-b border-line/60 hover:bg-surface-2"
+                >
+                  <td className="px-3 py-2.5">
+                    <Link
+                      href={`/companies/${connection.company_id}?companyRole=${connection.role}`}
+                      className="font-medium text-ink group-hover:text-blueprint"
+                    >
+                      {connection.canonical_name}
+                    </Link>
+                  </td>
+                  <td className="px-3 py-2.5 text-ink">
+                    {ROLE_LABEL[connection.role] ?? connection.role}
+                  </td>
+                  <td className="tnum px-3 py-2.5 text-right text-ink">
+                    {connection.shared.toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <p className="text-[15px] text-ink-soft">
+          No other companies share a project with this company.
+        </p>
+      )}
+    </Section>
+  );
+}
+
+function ConnectionsFallback() {
+  return (
+    <div className="rounded-[var(--radius)] border border-line bg-surface p-5">
+      <div className="h-4 w-48 animate-pulse bg-surface-2" />
+      <div className="mt-4 h-20 animate-pulse bg-surface-2" />
+    </div>
+  );
+}
+
 export default async function CompanyDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<SearchParams>;
 }) {
-  const { id } = await params;
-  const data = await getCompany(Number(id));
-  if (!data) notFound();
-  const { company, stat, projects, connections } = data;
+  const [{ id: rawId }, sp] = await Promise.all([params, searchParams]);
+  const id = Number(rawId);
+  if (!Number.isFinite(id)) notFound();
+
+  const page = Number(one(sp.page) ?? "1") || 1;
+  const sort = one(sp.sort) ?? "changed";
+  const stage = one(sp.stage) ?? "all";
+
+  const [summary, projectResult] = await Promise.all([
+    getCompanySummary(id),
+    getCompanyProjects(id, {
+      q: one(sp.q),
+      stage,
+      timing: one(sp.timing),
+      work: one(sp.work),
+      sqft: one(sp.sqft),
+      sort,
+      page,
+    }),
+  ]);
+  if (!summary) notFound();
+
+  const { company, stat } = summary;
+  const { rows, total } = projectResult;
+  const pages = Math.max(1, Math.ceil(total / COMPANY_PROJECTS_PAGE));
+  const requestedRole = one(sp.companyRole);
+  const activeRole =
+    requestedRole && stat.roles.includes(requestedRole)
+      ? requestedRole
+      : stat.roles.length === 1
+        ? stat.roles[0]
+        : undefined;
+
+  const flat: Record<string, string> = {};
+  for (const [key, value] of Object.entries(sp)) {
+    const stringValue = one(value);
+    if (stringValue) flat[key] = stringValue;
+  }
+  const basePath = `/companies/${id}`;
+  const pageHref = (nextPage: number) => {
+    const next = new URLSearchParams(flat);
+    next.set("page", String(nextPage));
+    return `${basePath}?${next.toString()}`;
+  };
+  const returnQuery = new URLSearchParams(flat);
+  const returnPath = `${basePath}${
+    returnQuery.size ? `?${returnQuery.toString()}` : ""
+  }`;
+  const projectHrefSuffix = `?from=${encodeURIComponent(
+    returnPath,
+  )}&fromLabel=${encodeURIComponent(company.canonical_name)}`;
 
   return (
     <div className="min-h-dvh">
-      <header className="sticky top-0 z-20 border-b border-line bg-paper/85 px-6 pt-5 pb-4 backdrop-blur-sm">
-        <Link
-          href="/companies"
-          className="font-mono text-[11px] text-ink-faint hover:text-blueprint"
-        >
-          ← Companies
-        </Link>
-        <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
+      <header className="z-20 border-b border-line bg-paper/90 px-6 pt-5 pb-4 backdrop-blur-sm md:sticky md:top-0">
+        <div className="flex flex-wrap items-center gap-2 font-mono text-[13px] text-ink-soft">
+          <Link href="/companies" className="hover:text-blueprint">
+            Companies
+          </Link>
+          <span>/</span>
+          {activeRole && (
+            <>
+              <Link
+                href={`/companies?role=${activeRole}`}
+                className="hover:text-blueprint"
+              >
+                {ROLE_LABEL[activeRole] ?? activeRole}
+              </Link>
+              <span>/</span>
+            </>
+          )}
+          <span className="text-ink">{company.canonical_name}</span>
+        </div>
+
+        <div className="mt-3 flex flex-wrap items-end justify-between gap-5">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-ink">
+            <h1 className="text-[26px] font-semibold tracking-tight text-ink">
               {company.canonical_name}
             </h1>
-            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-              {(stat.roles ?? []).map((r) => (
-                <Badge key={r} tone="neutral">
-                  {ROLE_SHORT[r] ?? r}
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {stat.roles.map((role) => (
+                <Badge key={role} tone="neutral">
+                  {ROLE_LABEL[role] ?? role}
                 </Badge>
               ))}
             </div>
           </div>
-          <div className="flex gap-6 font-mono text-xs text-ink-faint">
+
+          <div className="grid grid-cols-4 gap-6 font-mono text-[13px] text-ink-soft">
             <div>
-              <div className="text-lg font-semibold text-ink">
+              <div className="text-xl font-semibold text-ink">
                 {stat.project_count.toLocaleString()}
               </div>
               projects
             </div>
             <div>
-              <div className="text-lg font-semibold text-ink">
-                {stat.active_count.toLocaleString()}
+              <div className="text-xl font-semibold text-ink">
+                {stat.open_count.toLocaleString()}
               </div>
-              active
+              open
             </div>
             <div>
-              <div className="text-lg font-semibold text-ink">
-                {(stat.cities ?? []).length}
+              <div className="text-xl font-semibold text-rust">
+                {stat.behind_count.toLocaleString()}
               </div>
-              markets
+              behind
+            </div>
+            <div>
+              <div className="text-xl font-semibold text-ink">
+                {sqft(stat.largest_project_sqft)}
+              </div>
+              largest
             </div>
           </div>
         </div>
       </header>
 
-      <div className="grid gap-4 p-6 lg:grid-cols-[1fr_320px]">
-        {/* Main */}
-        <div className="flex flex-col gap-4">
-          <Section
-            title="PROJECT HISTORY"
-            meta={`${projects.length}${projects.length === 200 ? "+" : ""} shown`}
-          >
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-[13px]">
-                <thead>
-                  <tr className="label border-b border-line text-left">
-                    <th className="px-2 py-1.5 font-medium">Project</th>
-                    <th className="px-2 py-1.5 font-medium">Role</th>
-                    <th className="px-2 py-1.5 font-medium">City</th>
-                    <th className="px-2 py-1.5 font-medium">Status</th>
-                    <th className="px-2 py-1.5 text-right font-medium">Sq Ft</th>
-                    <th className="px-2 py-1.5 font-medium">Filed</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {projects.map((p) => (
-                    <tr
-                      key={p.project_number + p.role}
-                      className="group border-b border-line/60 hover:bg-surface-2"
-                    >
-                      <td className="px-2 py-2">
-                        <Link
-                          href={`/projects/${p.project_number}`}
-                          className="text-ink group-hover:text-blueprint"
-                        >
-                          {p.project_name || p.facility_name || p.project_number}
-                        </Link>
-                      </td>
-                      <td className="px-2 py-2 text-ink-soft">
-                        {ROLE_SHORT[p.role] ?? p.role}
-                      </td>
-                      <td className="px-2 py-2 whitespace-nowrap text-ink-soft">
-                        {p.location_city
-                          ? `${p.location_city}, ${p.location_state ?? ""}`
-                          : DASH}
-                      </td>
-                      <td className="px-2 py-2">
-                        <Badge tone={statusTone(p.current_status)}>
-                          {p.current_status ?? DASH}
-                        </Badge>
-                      </td>
-                      <td className="tnum px-2 py-2 text-right text-ink">
-                        {sqft(p.square_footage)}
-                      </td>
-                      <td className="tnum px-2 py-2 whitespace-nowrap text-ink-faint">
-                        {shortDate(p.registration_date)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+      <main className="flex flex-col gap-5 p-6">
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <Section title="PROJECT HISTORY" meta={`${total.toLocaleString()} projects`}>
+            <ProjectFilters
+              defaultStage="all"
+              searchPlaceholder={`Search ${company.canonical_name} projects…`}
+            />
           </Section>
 
-          <Section title="CONNECTED COMPANIES" meta="shared projects">
-            {connections.length ? (
-              <table className="w-full border-collapse text-[13px]">
-                <thead>
-                  <tr className="label border-b border-line text-left">
-                    <th className="px-2 py-1.5 font-medium">Company</th>
-                    <th className="px-2 py-1.5 font-medium">Relationship</th>
-                    <th className="px-2 py-1.5 text-right font-medium">Shared</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {connections.map((c) => (
-                    <tr
-                      key={c.company_id + c.role}
-                      className="group border-b border-line/60 hover:bg-surface-2"
-                    >
-                      <td className="px-2 py-2">
-                        <Link
-                          href={`/companies/${c.company_id}`}
-                          className="text-ink group-hover:text-blueprint"
-                        >
-                          {c.canonical_name}
-                        </Link>
-                      </td>
-                      <td className="px-2 py-2 text-ink-soft">
-                        {ROLE_SHORT[c.role] ?? c.role} on shared projects
-                      </td>
-                      <td className="tnum px-2 py-2 text-right text-ink">
-                        {c.shared}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p className="text-[12px] text-ink-faint">
-                No companies share a project with this one yet.
-              </p>
-            )}
-          </Section>
-        </div>
-
-        {/* Right rail */}
-        <div className="flex flex-col gap-4">
-          <Section title="IDENTITY">
-            <div className="flex flex-col gap-3">
+          <Section title="COMPANY INFORMATION">
+            <dl className="grid gap-4 text-[15px]">
               <div>
-                <div className="label mb-1">Phone</div>
-                <div className="font-mono text-[13px] text-ink">
-                  {company.phone ?? DASH}
-                </div>
+                <dt className="label mb-1">Phone</dt>
+                <dd className="font-mono text-ink">{company.phone ?? DASH}</dd>
               </div>
               <div>
-                <div className="label mb-1">Address</div>
-                <div className="text-[13px] text-ink-soft">
-                  {company.address ?? DASH}
-                </div>
+                <dt className="label mb-1">Address</dt>
+                <dd className="text-ink">{company.address ?? DASH}</dd>
+              </div>
+              <div>
+                <dt className="label mb-1">Last filed</dt>
+                <dd className="tnum text-ink">{shortDate(stat.last_filed)}</dd>
+              </div>
+              <div>
+                <dt className="label mb-1">Markets</dt>
+                <dd className="text-ink">
+                  {stat.cities?.length
+                    ? stat.cities.slice(0, 12).join(", ")
+                    : DASH}
+                </dd>
               </div>
               {company.name_variants.length > 1 && (
                 <div>
-                  <div className="label mb-1">
-                    Also filed as ({company.name_variants.length})
-                  </div>
-                  <div className="flex flex-col gap-0.5 font-mono text-[11px] text-ink-faint">
-                    {company.name_variants.slice(0, 8).map((v) => (
-                      <span key={v}>{v}</span>
+                  <dt className="label mb-1">
+                    Filed names ({company.name_variants.length})
+                  </dt>
+                  <dd className="flex max-h-28 flex-col gap-0.5 overflow-auto font-mono text-[13px] text-ink-soft">
+                    {company.name_variants.slice(0, 12).map((variant) => (
+                      <span key={variant}>{variant}</span>
                     ))}
-                  </div>
+                  </dd>
                 </div>
               )}
-            </div>
-          </Section>
-
-          <Section title="MARKETS">
-            <div className="flex flex-wrap gap-1.5">
-              {(stat.cities ?? []).length ? (
-                (stat.cities ?? []).slice(0, 18).map((c) => (
-                  <span
-                    key={c}
-                    className="rounded-[var(--radius)] border border-line bg-paper px-1.5 py-0.5 font-mono text-[11px] text-ink-soft"
-                  >
-                    {c}
-                  </span>
-                ))
-              ) : (
-                <span className="text-[12px] text-ink-faint">{DASH}</span>
-              )}
-            </div>
-          </Section>
-
-          <Section title="TEAM NOTES">
-            <p className="text-[12px] text-ink-faint">
-              No notes yet. Team notes with @mentions arrive next.
-            </p>
+            </dl>
           </Section>
         </div>
-      </div>
+
+        <div className="rounded-[var(--radius)] border border-line bg-surface">
+          <ProjectTable
+            rows={rows}
+            activeSort={sort}
+            params={flat}
+            basePath={basePath}
+            hiddenCompanyRoles={activeRole ? [activeRole] : []}
+            projectHrefSuffix={projectHrefSuffix}
+          />
+          <Pagination
+            page={page}
+            pages={pages}
+            total={total}
+            pageSize={COMPANY_PROJECTS_PAGE}
+            hrefFor={pageHref}
+            unit="projects"
+          />
+        </div>
+
+        <Suspense fallback={<ConnectionsFallback />}>
+          <ConnectedCompanies id={id} />
+        </Suspense>
+
+        <Section title="TEAM NOTES">
+          <p className="text-[15px] text-ink-soft">
+            No notes yet. Team notes and mentions will live here.
+          </p>
+        </Section>
+      </main>
     </div>
   );
 }

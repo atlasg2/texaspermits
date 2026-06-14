@@ -23,8 +23,10 @@ export default async function ProjectsPage({
 
   const { rows, total } = await getProjects({
     q: one(sp.q),
-    status: one(sp.status),
+    stage: one(sp.stage) ?? "open",
+    timing: one(sp.timing),
     work: one(sp.work),
+    sqft: one(sp.sqft),
     sort,
     page,
   });
@@ -43,49 +45,43 @@ export default async function ProjectsPage({
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <PageHeader
-        eyebrow="The full record"
-        title="Projects"
-        count={`${total.toLocaleString()} projects`}
-      >
-        <ProjectsToolbar />
-      </PageHeader>
+      <PageHeader title="Projects" count={`${total.toLocaleString()} projects`} />
 
-      <div className="flex-1 px-3 py-2">
-        <ProjectsTable rows={rows} activeSort={sort} params={flat} />
+      <div className="flex-1 p-4">
+        <div className="overflow-hidden rounded-lg border border-line bg-surface">
+          <ProjectsToolbar />
+          <ProjectsTable rows={rows} activeSort={sort} params={flat} />
+        </div>
       </div>
 
-      {/* Pagination */}
-      <div className="sticky bottom-0 flex items-center justify-between border-t border-line bg-paper/90 px-6 py-3 backdrop-blur-sm">
-        <span className="font-mono text-[11px] text-ink-faint">
-          Page {page.toLocaleString()} of {pages.toLocaleString()}
-          {" · "}
-          {Math.min((page - 1) * PAGE_SIZE + 1, total).toLocaleString()}–
-          {Math.min(page * PAGE_SIZE, total).toLocaleString()} of{" "}
-          {total.toLocaleString()}
+      <div className="sticky bottom-0 flex items-center justify-between border-t border-line bg-paper/90 px-4 py-2.5 backdrop-blur-sm">
+        <span className="text-[13px] text-ink-faint">
+          <span className="tnum">{total.toLocaleString()}</span> projects · page{" "}
+          <span className="tnum">{page.toLocaleString()}</span> of{" "}
+          <span className="tnum">{pages.toLocaleString()}</span>
         </span>
         <div className="flex gap-2">
           {page > 1 ? (
             <Link
               href={pageHref(page - 1)}
-              className="rounded-[var(--radius)] border border-line-strong bg-surface px-3 py-1.5 font-mono text-xs text-ink-soft hover:border-blueprint hover:text-blueprint"
+              className="rounded-md border border-line-strong bg-surface px-2.5 py-1.5 text-[13px] font-medium text-ink-soft hover:border-blueprint hover:text-blueprint"
             >
               ← Prev
             </Link>
           ) : (
-            <span className="rounded-[var(--radius)] border border-line bg-surface px-3 py-1.5 font-mono text-xs text-ink-faint opacity-50">
+            <span className="rounded-md border border-line bg-surface px-2.5 py-1.5 text-[13px] font-medium text-ink-faint opacity-50">
               ← Prev
             </span>
           )}
           {page < pages ? (
             <Link
               href={pageHref(page + 1)}
-              className="rounded-[var(--radius)] border border-line-strong bg-surface px-3 py-1.5 font-mono text-xs text-ink-soft hover:border-blueprint hover:text-blueprint"
+              className="rounded-md border border-line-strong bg-surface px-2.5 py-1.5 text-[13px] font-medium text-ink-soft hover:border-blueprint hover:text-blueprint"
             >
               Next →
             </Link>
           ) : (
-            <span className="rounded-[var(--radius)] border border-line bg-surface px-3 py-1.5 font-mono text-xs text-ink-faint opacity-50">
+            <span className="rounded-md border border-line bg-surface px-2.5 py-1.5 text-[13px] font-medium text-ink-faint opacity-50">
               Next →
             </span>
           )}

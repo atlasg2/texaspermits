@@ -1,20 +1,38 @@
-// Schedule state is a computed ATTENTION SIGNAL, not a scraped fact. The daily
-// engine will persist it to project_schedule; until then we derive it here so the
-// Projects table and the Possibly-Late view work on real data today.
-//
-// TABS dates are filer estimates and status can lag the jobsite — "possibly late"
-// means worth a look, never proof a job is behind.
+// Project state combines TABS lifecycle status with filer-estimated dates.
+// Dates take precedence for open projects because source status can lag.
 
 export type ScheduleState =
-  | "upcoming"
+  | "registered"
+  | "approved"
   | "active"
-  | "possibly_late"
+  | "behind"
   | "complete"
   | "unknown";
 
 export function isTerminal(status: string | null | undefined): boolean {
   const s = (status || "").toLowerCase();
-  return s.includes("closed") || s.includes("cancel") || s.includes("void");
+  return (
+    s.includes("inspection complete") ||
+    s.includes("closed") ||
+    s.includes("cancel") ||
+    s.includes("void")
+  );
+}
+
+export function isStaleRegistration(
+  status: string | null | undefined,
+  completion: string | null | undefined,
+): boolean {
+  if (status !== "Project Registered" || !completion) return false;
+  return completion < new Date().toISOString().slice(0, 10);
+}
+
+export function isBehindEstimate(
+  status: string | null | undefined,
+  completion: string | null | undefined,
+): boolean {
+  if (status !== "Review Complete" || !completion) return false;
+  return completion < new Date().toISOString().slice(0, 10);
 }
 
 export function deriveSchedule(
@@ -24,10 +42,10 @@ export function deriveSchedule(
 ): ScheduleState {
   if (isTerminal(status)) return "complete";
   const today = new Date().toISOString().slice(0, 10);
-  if (completion && completion < today) return "possibly_late";
-  if (start && start > today) return "upcoming";
+  if (completion && completion < today) return "behind";
   if (start && start <= today) return "active";
-  if (completion && completion >= today) return "active";
+  if (status === "Review Complete") return "approved";
+  if (status === "Project Registered") return "registered";
   return "unknown";
 }
 
@@ -35,9 +53,10 @@ export const SCHEDULE_META: Record<
   ScheduleState,
   { label: string; tone: Tone }
 > = {
-  upcoming: { label: "Upcoming", tone: "blueprint" },
+  registered: { label: "Registered", tone: "neutral" },
+  approved: { label: "Approved / Not Started", tone: "blueprint" },
   active: { label: "Active", tone: "grass" },
-  possibly_late: { label: "Possibly Late", tone: "amber" },
+  behind: { label: "Behind", tone: "rust" },
   complete: { label: "Complete", tone: "slate" },
   unknown: { label: "Unknown", tone: "neutral" },
 };
@@ -52,4 +71,12 @@ export function statusTone(status: string | null | undefined): Tone {
   if (s.includes("inspection")) return "grass";
   if (s.includes("registered")) return "neutral";
   return "neutral";
+}
+
+export function statusLabel(status: string | null | undefined): string {
+  if (status === "Project Registered") return "Registered";
+  if (status === "Review Complete") return "Review Complete";
+  if (status === "Inspection Complete") return "Inspection Complete";
+  if (status === "Project Closed") return "Closed";
+  return status || "Unknown";
 }
