@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-06-15 — Add Google sign-in to login page
+**Asked:** Get the site running, then help set up Google auth from Supabase.
+**Done:**
+- Confirmed the Next.js dev server runs (`npm run dev`, :3000, 200 on `/login`).
+- Added a "Continue with Google" button to `src/app/login/page.tsx` calling
+  `supabase.auth.signInWithOAuth({ provider: "google" })` with `redirectTo`
+  `/auth/callback`. The existing callback's `exchangeCodeForSession` already
+  handles the OAuth (PKCE) return — no callback change needed.
+- Decision (per Nick): no access restriction for now — Google sign-in creates a
+  user on first login; allowlist gating deferred.
+**Next:** Nick to enable Google provider in the Supabase dashboard (paste Google
+Cloud OAuth client ID/secret) and add redirect URLs. Revisit access gating
+before production (anyone with Google can currently sign in).
+
+---
+
 ## 2026-06-14 — View workflow: flexible sqft, search, lists, and durable hide
 **Asked:** Replace the rigid 10k/40k view chips with useful square-foot filtering and
 search; make it possible to reset the result set, add/create a List from a view, and hide
