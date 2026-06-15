@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-06-15 — Deploy to Vercel (production)
+**Asked:** Deploy the web app to Vercel and return a hosted URL instead of the
+Codespace one.
+**Done:**
+- Linked `web/` to Vercel project `eliteinstall/elite-field` and set env vars
+  (Supabase URL/anon/service-role + ALLOWED_EMAILS) for prod/preview/dev via the
+  CLI (token + secrets never committed; `.vercel/` gitignored).
+- Deployed to production. Live at **https://elite-field.vercel.app**.
+- Verified: `/login` → 200, `/` → 307 redirect to `/login` (auth gate works in prod).
+**Next:** Add the Vercel callback `https://elite-field.vercel.app/auth/callback`
+to Supabase Redirect URLs and finish enabling the Google provider, so Google
+sign-in works on the hosted site (magic-link already works).
+
+---
+
 ## 2026-06-15 — Enforce real auth: remove DEV_NO_AUTH escape hatch
 **Asked:** Disable the dev "skip login" hatch and require a real (Google) session —
 no one should see the app unless logged in, since users will soon edit lists/views.
