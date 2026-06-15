@@ -5,6 +5,19 @@
 
 ---
 
+## 2026-06-15 — Light/dark mode toggle
+**Asked:** Iterate locally (not via deploy) and add a light/dark mode toggle.
+**Done:** Added a dark palette in `globals.css` by re-pointing the theme CSS
+variables under `html.dark` (utilities use `var(--color-*)`, so this recolors the
+whole app incl. zebra/header/badge washes). New `ThemeToggle` client component in
+the sidebar footer persists choice to `localStorage` (`field-terminal-theme`).
+Root layout gets an inline pre-paint script (stored choice → else OS preference)
+plus `suppressHydrationWarning` to avoid a flash/hydration mismatch. Verified it
+compiles; previewing on the Codespaces-forwarded dev URL, not redeployed.
+**Next:** Get Nick's read on the dark palette; tune shades if wanted, then redeploy.
+
+---
+
 ## 2026-06-15 — Soften the "too white" table look
 **Asked:** The table/card background reads as too stark white — make it look better.
 **Done:** Reworked theme tokens in `globals.css`: card surface from near-white
