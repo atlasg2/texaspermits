@@ -7,14 +7,16 @@
    reserved for numbers, dates, and IDs — never UI chrome.
    ============================================================ */
 @theme {
-  --color-paper: #d3dae3; /* app ground — cool slate */
-  --color-surface: #f4f7fa; /* cards / table — cool off-white */
-  --color-surface-2: #e7ecf2; /* zebra / hover */
+  --color-paper: #c4cedb; /* app ground — deeper cool slate */
+  --color-surface: #e8edf3; /* cards / table — calm light slate (not white) */
+  --color-surface-2: #d7dee8; /* hover */
+  --color-zebra: #e0e6ee; /* even-row striping */
+  --color-header: #dde4ec; /* table header band */
   --color-ink: #14181f; /* primary text */
   --color-ink-soft: #444a55; /* secondary text */
   --color-ink-faint: #767d89; /* labels, captions */
-  --color-line: #dce1e8; /* hairlines */
-  --color-line-strong: #d4dae2;
+  --color-line: #d2d9e2; /* hairlines */
+  --color-line-strong: #c3cbd6;
 
   --color-blueprint: #2563eb; /* primary accent */
   --color-blueprint-bright: #3b82f6; /* interactive */
@@ -46,6 +48,16 @@ body {
   font-size: 14.5px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Data tables: give the sheet structure so it doesn't read as flat white.
+   Header gets its own band; even rows are gently striped. Inline hover/hidden
+   classes (.hover\:bg-surface-2 etc.) out-specify these and still win. */
+thead tr {
+  background: var(--color-header);
+}
+tbody tr:nth-child(even) {
+  background: var(--color-zebra);
 }
 
 /* Tabular figures everywhere data lives — columns must align. */
