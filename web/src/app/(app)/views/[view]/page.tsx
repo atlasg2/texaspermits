@@ -77,12 +77,12 @@ export default async function ViewPage({
         </div>
       )}
 
-      <div className="mb-2 flex items-center gap-3 px-6 pt-4">
+      <div className="mb-2 flex items-center gap-3 px-4 pt-4">
         <Link
           href="/views"
-          className="font-mono text-[11px] text-ink-faint hover:text-blueprint"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-line-strong bg-surface px-3 py-1.5 text-[13px] font-medium text-ink-soft transition-colors hover:border-blueprint hover:text-blueprint"
         >
-          ← All views
+          <span aria-hidden>←</span> All views
         </Link>
       </div>
 

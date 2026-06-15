@@ -14,15 +14,14 @@ export function sqft(n: number | null | undefined): string {
   return n.toLocaleString();
 }
 
+// Compact, column-friendly date: "Jun 15 '26" — drops the comma and the
+// century so date columns stay narrow while staying human-readable.
 export function shortDate(d: string | null | undefined): string {
   if (!d) return DASH;
   const dt = new Date(d + "T00:00:00");
   if (isNaN(dt.getTime())) return DASH;
-  return dt.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  const md = dt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return `${md} '${String(dt.getFullYear()).slice(2)}`;
 }
 
 // "3d ago", "2mo ago" — for last-checked / last-change columns.

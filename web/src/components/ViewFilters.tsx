@@ -1,24 +1,33 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 function SearchIcon() {
   return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      aria-hidden
-    >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
       <circle cx="11" cy="11" r="7" />
       <path d="m20 20-3.5-3.5" />
     </svg>
   );
+}
+
+type SizePreset = { label: string; min: string; max: string };
+
+function presetsFor(minimumFloor?: number): SizePreset[] {
+  const base: SizePreset[] = [
+    { label: "10,000 – 25,000 sq ft", min: "10000", max: "25000" },
+    { label: "25,000 – 50,000 sq ft", min: "25000", max: "50000" },
+    { label: "50,000 – 100,000 sq ft", min: "50000", max: "100000" },
+    { label: "100,000+ sq ft", min: "100000", max: "" },
+  ];
+  const any: SizePreset = { label: "Any size", min: "", max: "" };
+  if (minimumFloor) return [any, ...base];
+  return [
+    any,
+    { label: "Under 10,000 sq ft", min: "", max: "10000" },
+    ...base,
+  ];
 }
 
 export function ViewFilters({
@@ -32,9 +41,13 @@ export function ViewFilters({
   const pathname = usePathname();
   const [pending, start] = useTransition();
   const [query, setQuery] = useState(params.q ?? "");
-  const [minimum, setMinimum] = useState(params.minSqft ?? "");
-  const [maximum, setMaximum] = useState(params.maxSqft ?? "");
   const firstQuery = useRef(true);
+
+  const presets = presetsFor(minimumFloor);
+  const curMin = params.minSqft ?? "";
+  const curMax = params.maxSqft ?? "";
+  const matchedIndex = presets.findIndex((p) => p.min === curMin && p.max === curMax);
+  const hasCustom = matchedIndex === -1 && (curMin !== "" || curMax !== "");
 
   function replace(next: URLSearchParams) {
     next.delete("page");
@@ -55,16 +68,16 @@ export function ViewFilters({
       replace(next);
     }, 300);
     return () => clearTimeout(timeout);
-    // params is intentionally represented by its serialized values above.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
-  function applySquareFootage(event: FormEvent) {
-    event.preventDefault();
+  function selectPreset(value: string) {
+    const preset = presets[Number(value)];
+    if (!preset) return;
     const next = new URLSearchParams(params);
-    if (minimum) next.set("minSqft", minimum);
+    if (preset.min) next.set("minSqft", preset.min);
     else next.delete("minSqft");
-    if (maximum) next.set("maxSqft", maximum);
+    if (preset.max) next.set("maxSqft", preset.max);
     else next.delete("maxSqft");
     next.delete("sqft");
     replace(next);
@@ -78,6 +91,7 @@ export function ViewFilters({
   }
 
   function reset() {
+    setQuery("");
     start(() => router.replace(pathname));
   }
 
@@ -88,72 +102,55 @@ export function ViewFilters({
     params.hidden === "1";
 
   return (
-    <div className="border-b border-line bg-surface px-3 py-2.5">
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="relative w-full sm:w-auto">
-          <span className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-ink-faint">
+    <div className="border-b border-line bg-surface px-4 py-3">
+      <div className="flex flex-wrap items-center gap-3">
+        {/* Search — the primary control, so it leads and gets room. */}
+        <div className="relative min-w-0 flex-1 sm:max-w-md">
+          <span className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-ink-faint">
             <SearchIcon />
           </span>
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search projects, companies, cities…"
-            className="h-8 w-full rounded-md border border-line-strong bg-surface py-1.5 pr-8 pl-8 text-[13px] text-ink outline-none placeholder:text-ink-faint focus:border-blueprint focus:ring-2 focus:ring-blueprint/15 sm:w-72"
+            className="h-10 w-full rounded-lg border border-line-strong bg-paper py-2 pr-9 pl-10 text-[14px] text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-blueprint focus:ring-2 focus:ring-blueprint/15"
           />
           {pending && (
-            <span className="absolute top-1/2 right-2.5 -translate-y-1/2 animate-pulse text-[11px] text-blueprint">
+            <span className="absolute top-1/2 right-3 -translate-y-1/2 animate-pulse text-[11px] text-blueprint">
               •••
             </span>
           )}
         </div>
 
-        <form
-          onSubmit={applySquareFootage}
-          className="flex flex-wrap items-center gap-1.5"
-        >
-          <span className="label px-1">Square feet</span>
-          <input
-            type="number"
-            min={minimumFloor ?? 0}
-            step="1000"
-            inputMode="numeric"
-            value={minimum}
-            onChange={(event) => setMinimum(event.target.value)}
-            placeholder={
-              minimumFloor ? minimumFloor.toLocaleString() : "Minimum"
-            }
-            aria-label="Minimum square footage"
-            className="h-8 w-28 rounded-md border border-line-strong bg-surface px-2.5 text-[13px] text-ink outline-none placeholder:text-ink-faint focus:border-blueprint focus:ring-2 focus:ring-blueprint/15"
-          />
-          <span className="text-[12px] text-ink-faint">to</span>
-          <input
-            type="number"
-            min={minimumFloor ?? 0}
-            step="1000"
-            inputMode="numeric"
-            value={maximum}
-            onChange={(event) => setMaximum(event.target.value)}
-            placeholder="Maximum"
-            aria-label="Maximum square footage"
-            className="h-8 w-28 rounded-md border border-line-strong bg-surface px-2.5 text-[13px] text-ink outline-none placeholder:text-ink-faint focus:border-blueprint focus:ring-2 focus:ring-blueprint/15"
-          />
-          <button
-            type="submit"
-            disabled={pending}
-            className="h-8 rounded-md border border-line-strong bg-surface px-2.5 text-[12px] font-medium text-ink-soft hover:border-blueprint hover:text-blueprint disabled:opacity-50"
+        {/* Size — preset ranges instead of free-typed numbers. */}
+        <div className="flex items-center gap-2">
+          <span className="label whitespace-nowrap">Size</span>
+          <select
+            value={hasCustom ? "custom" : String(Math.max(0, matchedIndex))}
+            onChange={(event) => selectPreset(event.target.value)}
+            className="h-10 rounded-lg border border-line-strong bg-paper px-3 pr-8 text-[14px] font-medium text-ink outline-none transition-colors focus:border-blueprint focus:ring-2 focus:ring-blueprint/15"
           >
-            Apply
-          </button>
-        </form>
+            {presets.map((preset, index) => (
+              <option key={preset.label} value={index}>
+                {preset.label}
+              </option>
+            ))}
+            {hasCustom && (
+              <option value="custom" disabled>
+                Custom ({curMin || "0"}–{curMax || "∞"})
+              </option>
+            )}
+          </select>
+        </div>
 
         <div className="ml-auto flex items-center gap-2">
           <button
             type="button"
             onClick={toggleHidden}
-            className={`h-8 rounded-md border px-2.5 text-[12px] font-medium ${
+            className={`h-10 rounded-lg border px-3 text-[13px] font-medium transition-colors ${
               params.hidden === "1"
                 ? "border-blueprint/40 bg-blueprint-wash text-blueprint"
-                : "border-line-strong bg-surface text-ink-soft hover:border-blueprint hover:text-blueprint"
+                : "border-line-strong bg-paper text-ink-soft hover:border-blueprint hover:text-blueprint"
             }`}
           >
             {params.hidden === "1" ? "Showing hidden" : "Show hidden"}
@@ -162,7 +159,7 @@ export function ViewFilters({
             <button
               type="button"
               onClick={reset}
-              className="h-8 px-2 text-[12px] font-medium text-ink-faint hover:text-rust"
+              className="h-10 rounded-lg px-3 text-[13px] font-medium text-ink-faint hover:text-rust"
             >
               Reset
             </button>

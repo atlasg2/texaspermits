@@ -81,9 +81,9 @@ export function ProjectTable({
     <DataTableFrame
       empty={!rows.length ? <TableEmpty /> : undefined}
     >
-      <table className="w-full border-collapse text-[15px]">
+      <table className="w-full min-w-full border-collapse text-[15px]">
         <thead>
-          <tr className="label border-b border-line-strong text-left">
+          <tr className="border-b-2 border-line-strong text-left text-[12px] font-semibold tracking-wide text-ink-soft uppercase">
             <th className="min-w-60 px-3 py-2 font-medium">Project</th>
             <th className="px-3 py-2 font-medium">City</th>
             <th className="px-3 py-2 font-medium">TABS Stage</th>
@@ -177,7 +177,7 @@ export function ProjectTable({
                     </div>
                   </Link>
                 </td>
-                <td className="px-3 py-2.5 whitespace-nowrap text-ink">
+                <td className="px-3 py-2.5 whitespace-nowrap font-medium text-ink">
                   {row.location_city ?? DASH}
                 </td>
                 <td className="px-3 py-2.5">
@@ -195,16 +195,16 @@ export function ProjectTable({
                     </div>
                   )}
                 </td>
-                <td className="px-3 py-2.5 whitespace-nowrap text-ink">
+                <td className="px-3 py-2.5 whitespace-nowrap font-medium text-ink">
                   {row.type_of_work
                     ? (WORK_SHORT[row.type_of_work] ?? row.type_of_work)
                     : DASH}
                 </td>
-                <td className="tnum px-3 py-2.5 text-right text-ink">
+                <td className="tnum px-3 py-2.5 text-right font-medium text-ink">
                   {sqft(row.square_footage)}
                 </td>
                 <td
-                  className="tnum px-3 py-2.5 text-right text-ink"
+                  className="tnum px-3 py-2.5 text-right font-medium text-ink"
                   title="Filer's self-reported estimate"
                 >
                   {money(row.estimated_cost)}
@@ -217,13 +217,13 @@ export function ProjectTable({
                     {firstLine(row.scope_of_work, 110)}
                   </span>
                 </td>
-                <td className="tnum px-3 py-2.5 whitespace-nowrap text-ink">
+                <td className="tnum px-3 py-2.5 whitespace-nowrap font-medium text-ink">
                   {shortDate(row.registration_date)}
                 </td>
-                <td className="tnum px-3 py-2.5 whitespace-nowrap text-ink">
+                <td className="tnum px-3 py-2.5 whitespace-nowrap font-medium text-ink">
                   {shortDate(row.start_date)}
                 </td>
-                <td className="tnum px-3 py-2.5 whitespace-nowrap text-ink">
+                <td className="tnum px-3 py-2.5 whitespace-nowrap font-medium text-ink">
                   <div>{shortDate(row.completion_date)}</div>
                   {behindEstimate && (
                     <div className="mt-1">

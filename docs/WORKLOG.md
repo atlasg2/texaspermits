@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-06-15 — Views table + filter polish
+**Asked:** Clearer/bigger search; sqft as a dropdown not free-typed; clearer
+list/view title + "back to all views"; bolder data columns; compact dates;
+table should fill full width.
+**Done:**
+- `ViewFilters`: bigger search (h-10), sqft min/max replaced with a **preset
+  range dropdown** (Any / Under 10k / 10–25k / 25–50k / 50–100k / 100k+,
+  floor-aware), taller themed controls.
+- `shortDate` now compact ("Jun 15 '26") to narrow date columns.
+- `ProjectTable`: data cells `font-medium text-ink` (bolder), stronger uppercase
+  header row, `min-w-full` so the table fills the card.
+- `PageHeader` title bumped to 22px/bold; view "← All views" is now a clear
+  bordered button.
+**Next:** Multi-select (bulk add-to-list) — design noted, to build next.
+
+---
+
 ## 2026-06-15 — Demo lists reset + redesigned row "Actions" menu
 **Asked:** Trim lists to a clean demo set (chose **Hot Leads / Watchlist**), and
 redesign the per-row "•••" control into a labeled **Actions** dropdown
