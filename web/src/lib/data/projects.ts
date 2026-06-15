@@ -53,6 +53,14 @@ export function cleanProjectSearchTerm(s: string): string {
   return s.replace(/[(),]/g, " ").trim();
 }
 
+// Total projects tracked — used for the "All projects" card on the Views hub.
+export async function allProjectsCount(): Promise<number> {
+  const { count } = await admin
+    .from("projects")
+    .select("project_number", { count: "exact", head: true });
+  return count ?? 0;
+}
+
 export async function companyProjectNumbersForSearch(
   term: string,
 ): Promise<string[]> {

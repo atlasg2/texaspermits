@@ -5,6 +5,22 @@
 
 ---
 
+## 2026-06-15 — Views hub as the home screen
+**Asked:** Don't land on the projects table. Land on the overview of all views
+(readable cards), where "All projects" is just one of the views.
+**Done:**
+- Restored `/views` as a hub: a card per view (count + blurb + caveat), with an
+  **All projects** card first (total project count → opens the full table).
+- Made the hub the landing: `/`, post-login middleware, and auth callback/confirm
+  now default to `/views` instead of `/projects`.
+- Nav: "Projects" → **Views** (→ `/views`); stays highlighted while inside the
+  `/projects` table. Added `allProjectsCount()` for the All-projects card.
+- `/projects` (+ `?view=`) remains the table/switcher drill-in; `/views/[view]`
+  still deep-links into it. Verified with a full `next build` (TS clean).
+**Next:** "Job"-style project view; multi-select.
+
+---
+
 ## 2026-06-15 — Re-add dev-only auth bypass (local iteration)
 **Asked:** Skip login locally so work can continue without the Google redirect
 setup. Confirm Projects = view switcher with "All projects" as the default tab.
