@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-06-15 — Merge Views into Projects (one browse surface + view switcher)
+**Asked:** Restructure so Projects/Views aren't two near-identical screens. Make
+one browse surface where "All projects" is the default view and a switcher lets
+you change the active view in place.
+**Done:**
+- New `ViewSwitcher` chip bar (All projects · Registered 10k+ · New/Changed ·
+  Active · Recently Completed · Behind).
+- `/projects` now handles both: no `view` param → All (`getProjects` + toolbar);
+  `?view=KEY` → that view (`getView` + the nicer ViewFilters + per-view Actions
+  column + caveat banner). Deep-linkable; sort/filter/pagination all preserve the
+  active view.
+- Removed **Views** from the nav (now: Inbox · Projects · Lists). Old `/views`
+  and `/views/[view]` are thin redirects to `/projects` so bookmarks survive.
+- Fixed ViewFilters **Reset** to keep the active view (only clears filters).
+- Verified with a full `next build`: TypeScript clean.
+**Next:** Multi-select bulk actions; optionally surface per-view counts on chips.
+
+---
+
 ## 2026-06-15 — Remove Companies from the UI
 **Asked:** Drop the Companies section entirely from the UI (nav + all pages);
 keep DB tables + the Tenant/Architect/Owner columns and search-by-company.

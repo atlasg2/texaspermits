@@ -92,7 +92,11 @@ export function ViewFilters({
 
   function reset() {
     setQuery("");
-    start(() => router.replace(pathname));
+    // Keep the active view; only clear the filters within it.
+    const next = new URLSearchParams();
+    if (params.view) next.set("view", params.view);
+    const qs = next.toString();
+    start(() => router.replace(`${pathname}${qs ? `?${qs}` : ""}`));
   }
 
   const hasFilters =
