@@ -5,6 +5,17 @@
 
 ---
 
+## 2026-06-15 — Soften the "too white" table look
+**Asked:** The table/card background reads as too stark white — make it look better.
+**Done:** Reworked theme tokens in `globals.css`: card surface from near-white
+`#f4f7fa` → calm light-slate `#e8edf3`, deeper paper ground `#c4cedb`, stronger
+hairlines. Added scoped CSS so data tables get a header band (`--color-header`)
+and zebra striping on even rows (`--color-zebra`); inline hover/hidden classes
+out-specify these so hover still works. Deployed to prod.
+**Next:** Get Nick's read on the new shade; can dial warmer/darker if wanted.
+
+---
+
 ## 2026-06-15 — Deploy to Vercel (production)
 **Asked:** Deploy the web app to Vercel and return a hosted URL instead of the
 Codespace one.
