@@ -79,16 +79,13 @@ function Field({
 
 function ConnectionCard({ connection }: { connection: Connection }) {
   return (
-    <Link
-      href={`/companies/${connection.id}?companyRole=${connection.role}`}
-      className="block rounded-[var(--radius)] border border-line bg-paper px-3 py-3 transition-colors hover:border-blueprint hover:bg-blueprint-wash"
-    >
+    <div className="block rounded-[var(--radius)] border border-line bg-paper px-3 py-3">
       <div className="font-medium text-ink">{connection.name}</div>
       <div className="mt-1 flex flex-col gap-0.5 font-mono text-[13px] text-ink-soft">
         {connection.phone && <span>{connection.phone}</span>}
         {connection.address && <span>{connection.address}</span>}
       </div>
-    </Link>
+    </div>
   );
 }
 

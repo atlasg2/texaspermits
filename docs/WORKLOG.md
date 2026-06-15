@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-06-15 — Remove Companies from the UI
+**Asked:** Drop the Companies section entirely from the UI (nav + all pages);
+keep DB tables + the Tenant/Architect/Owner columns and search-by-company.
+**Done:**
+- Removed the "Companies" nav item and deleted the whole `(app)/companies` route
+  (list page, loading, toolbar, and the `[id]` detail page).
+- Converted the kept company references to plain text (no dead links): the
+  Tenant/Architect/Owner cells in `ProjectTable` and the connection cards on the
+  project detail page are now non-clickable spans/divs.
+- Left the `companies` + `project_companies` tables and the data layer intact, so
+  projects still display company names and search-by-company still works.
+- Verified with a full `next build`: TypeScript clean, route list shows only
+  inbox/projects/views/lists (+auth/login), no /companies.
+**Next:** Multi-select (bulk add-to-list) still on deck.
+
+---
+
 ## 2026-06-15 — Views table + filter polish
 **Asked:** Clearer/bigger search; sqft as a dropdown not free-typed; clearer
 list/view title + "back to all views"; bolder data columns; compact dates;

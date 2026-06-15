@@ -41,13 +41,12 @@ function CompanyRoleCell({
   if (!company) return <span className="text-ink-soft">{DASH}</span>;
 
   return (
-    <Link
-      href={`/companies/${company.id}?companyRole=${role}`}
-      className="block max-w-[190px] truncate text-ink hover:text-blueprint"
+    <span
+      className="block max-w-[190px] truncate font-medium text-ink"
       title={company.name}
     >
       {company.name}
-    </Link>
+    </span>
   );
 }
 
