@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Nav } from "@/components/Nav";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const STORAGE_KEY = "field-terminal-sidebar-hidden";
 
@@ -80,7 +81,10 @@ export function AppShell({
         </div>
 
         <div className="mt-auto border-t border-line px-3 py-3">
-          <div className="mb-2 truncate text-[13px] text-ink-faint">{email}</div>
+          <div className="mb-1.5">
+            <ThemeToggle />
+          </div>
+          <div className="mb-2 truncate px-2.5 text-[13px] text-ink-faint">{email}</div>
           <form action="/auth/signout" method="post">
             <button
               type="submit"

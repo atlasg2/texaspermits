@@ -37,8 +37,41 @@
   --radius: 6px;
 }
 
+/* ── Dark theme ──────────────────────────────────────────────
+   Same tokens, re-pointed. Utilities reference var(--color-*),
+   so overriding the variables under .dark recolors everything. */
+html.dark {
+  --color-paper: #0e1217; /* app ground */
+  --color-surface: #161b22; /* cards / table */
+  --color-surface-2: #232b35; /* hover */
+  --color-zebra: #1a212a; /* even-row striping */
+  --color-header: #1d2531; /* table header band */
+  --color-ink: #e6edf3; /* primary text */
+  --color-ink-soft: #aab3c0; /* secondary text */
+  --color-ink-faint: #7b8593; /* labels, captions */
+  --color-line: #262e39; /* hairlines */
+  --color-line-strong: #333d4a;
+
+  --color-blueprint: #3b82f6; /* primary accent (brighter on dark) */
+  --color-blueprint-bright: #60a5fa;
+  --color-blueprint-wash: #15243d;
+
+  --color-amber: #e0982e;
+  --color-amber-wash: #2a1e0d;
+  --color-grass: #3fb950;
+  --color-grass-wash: #102619;
+  --color-rust: #f85149;
+  --color-rust-wash: #2c1417;
+  --color-slate: #8b98a9;
+  --color-slate-wash: #1b212b;
+}
+
 html {
   background: var(--color-paper);
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
 }
 
 body {
