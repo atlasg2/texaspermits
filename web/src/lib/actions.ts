@@ -11,6 +11,12 @@ async function currentEmail(): Promise<string> {
     data: { user },
   } = await supabase.auth.getUser();
   if (user?.email) return user.email;
+  if (
+    process.env.DEV_NO_AUTH === "true" &&
+    process.env.NODE_ENV !== "production"
+  ) {
+    return "local-dev";
+  }
   throw new Error("Unauthorized");
 }
 

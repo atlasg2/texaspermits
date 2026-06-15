@@ -5,6 +5,21 @@
 
 ---
 
+## 2026-06-15 — Re-add dev-only auth bypass (local iteration)
+**Asked:** Skip login locally so work can continue without the Google redirect
+setup. Confirm Projects = view switcher with "All projects" as the default tab.
+**Done:**
+- Re-introduced `DEV_NO_AUTH`, but double-guarded: only bypasses when
+  `DEV_NO_AUTH === "true"` AND `NODE_ENV !== "production"`. Can't leak to the live
+  Vercel build. Added to `.env.local` (gitignored); production untouched/locked.
+  Touches `middleware.ts`, `(app)/layout.tsx`, `actions.ts` (`local-dev` email).
+- Confirmed structure already matches the ask: `/projects` shows All projects by
+  default, with the view switcher (All · Registered 10k+ · New/Changed · Active ·
+  Recently Completed · Behind).
+**Next:** Define the "job"-style view fields/layout; multi-select.
+
+---
+
 ## 2026-06-15 — Merge Views into Projects (one browse surface + view switcher)
 **Asked:** Restructure so Projects/Views aren't two near-identical screens. Make
 one browse surface where "All projects" is the default view and a switcher lets
