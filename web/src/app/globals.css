@@ -93,6 +93,29 @@ tbody tr:nth-child(even) {
   background: var(--color-zebra);
 }
 
+/* Row actions popover — top-layer dropdown, anchored in JS. Smooth entry
+   via @starting-style so it scales/fades in from the trigger corner. */
+.actions-menu {
+  opacity: 0;
+  transform: scale(0.97) translateY(-4px);
+  transform-origin: top right;
+  transition:
+    opacity 0.14s ease,
+    transform 0.14s ease,
+    overlay 0.14s allow-discrete,
+    display 0.14s allow-discrete;
+}
+.actions-menu:popover-open {
+  opacity: 1;
+  transform: none;
+}
+@starting-style {
+  .actions-menu:popover-open {
+    opacity: 0;
+    transform: scale(0.97) translateY(-4px);
+  }
+}
+
 /* Tabular figures everywhere data lives — columns must align. */
 .tnum {
   font-variant-numeric: tabular-nums;

@@ -142,9 +142,7 @@ export function ProjectTable({
               params={params}
             />
             {viewKey && (
-              <th className="w-10 px-2 py-2 font-medium">
-                <span className="sr-only">Actions</span>
-              </th>
+              <th className="px-3 py-2 text-right font-medium">Actions</th>
             )}
           </tr>
         </thead>
@@ -250,7 +248,7 @@ export function ProjectTable({
                   {relative(row.last_changed_at)}
                 </td>
                 {viewKey && (
-                  <td className="px-2 py-2 text-right">
+                  <td className="px-3 py-2 text-right whitespace-nowrap">
                     <ProjectRowActions
                       projectNumber={row.project_number}
                       viewKey={viewKey}

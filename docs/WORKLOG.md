@@ -5,6 +5,25 @@
 
 ---
 
+## 2026-06-15 — Demo lists reset + redesigned row "Actions" menu
+**Asked:** Trim lists to a clean demo set (chose **Hot Leads / Watchlist**), and
+redesign the per-row "•••" control into a labeled **Actions** dropdown
+(frontend-design skill).
+**Done:**
+- Migration `0011_demo_lists.sql` (forward-only, idempotent): drop seeded
+  `Follow-Up`, add `Hot Leads`, keep `Watchlist`. Applied via migrate.py.
+  Lists now: Watchlist (1 item) + Hot Leads (0).
+- Rebuilt `ProjectRowActions`: bare `•••` modal → a labeled **Actions** button +
+  native Popover-API dropdown (top-layer, so it escapes the table's overflow
+  clipping), anchored under the trigger in JS with bottom-flip. Grouped "Add to
+  list" rows with list icons + inline "Added ✓" feedback, inline "New list"
+  create, and a quiet hide/restore action. `@starting-style` scale/fade entry.
+  All themed via CSS vars (works light + dark). Widened the Actions column.
+- Typecheck clean (`tsc --noEmit`). Previewing locally.
+**Next:** Nick to eyeball the menu on a view page; tweak then redeploy.
+
+---
+
 ## 2026-06-15 — Light/dark mode toggle
 **Asked:** Iterate locally (not via deploy) and add a light/dark mode toggle.
 **Done:** Added a dark palette in `globals.css` by re-pointing the theme CSS
