@@ -2,19 +2,19 @@
 
 /* ============================================================
    Field Terminal — design system
-   Modern data tool: white surfaces on a soft cool ground,
-   near-black ink, one confident blue accent. Monospace is
+   Modern data tool: cool off-white surfaces on a slate-grey
+   ground, near-black ink, one confident blue accent. Monospace is
    reserved for numbers, dates, and IDs — never UI chrome.
    ============================================================ */
 @theme {
-  --color-paper: #f6f7f9; /* app ground */
-  --color-surface: #ffffff; /* cards / table */
-  --color-surface-2: #f1f3f5; /* zebra / hover */
-  --color-ink: #17181b; /* primary text */
-  --color-ink-soft: #45474d; /* secondary text */
-  --color-ink-faint: #797c84; /* labels, captions */
-  --color-line: #e8e9ed; /* hairlines */
-  --color-line-strong: #d5d7dd;
+  --color-paper: #d3dae3; /* app ground — cool slate */
+  --color-surface: #f4f7fa; /* cards / table — cool off-white */
+  --color-surface-2: #e7ecf2; /* zebra / hover */
+  --color-ink: #14181f; /* primary text */
+  --color-ink-soft: #444a55; /* secondary text */
+  --color-ink-faint: #767d89; /* labels, captions */
+  --color-line: #dce1e8; /* hairlines */
+  --color-line-strong: #d4dae2;
 
   --color-blueprint: #2563eb; /* primary accent */
   --color-blueprint-bright: #3b82f6; /* interactive */

@@ -7,13 +7,11 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const devNoAuth = process.env.DEV_NO_AUTH === "true";
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user && !devNoAuth) redirect("/login");
-  const email = user?.email ?? "dev preview";
+  if (!user) redirect("/login");
 
-  return <AppShell email={email}>{children}</AppShell>;
+  return <AppShell email={user.email ?? "unknown"}>{children}</AppShell>;
 }

@@ -4,11 +4,6 @@ import { NextResponse, type NextRequest } from "next/server";
 // Refreshes the auth session on every request and gates the app: unauthenticated
 // users are sent to /login; logged-in users hitting /login go to /projects.
 export async function updateSession(request: NextRequest) {
-  // Dev-only escape hatch: browse without logging in. Never set in production.
-  if (process.env.DEV_NO_AUTH === "true") {
-    return NextResponse.next({ request });
-  }
-
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(

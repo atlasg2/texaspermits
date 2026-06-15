@@ -5,6 +5,23 @@
 
 ---
 
+## 2026-06-15 — Enforce real auth: remove DEV_NO_AUTH escape hatch
+**Asked:** Disable the dev "skip login" hatch and require a real (Google) session —
+no one should see the app unless logged in, since users will soon edit lists/views.
+**Done:**
+- Removed `DEV_NO_AUTH` everywhere: `.env.local`, `proxy`/`middleware.ts`,
+  `(app)/layout.tsx`, and the `"local-dev"` fallback in `actions.ts`. The app now
+  always requires a session.
+- Verified the gate: unauthenticated `/projects` and `/lists` → 307 redirect to
+  `/login`; `/login` → 200. Server actions throw `Unauthorized` with no user.
+- Note: `ALLOWED_EMAILS` is present in `.env.local` but still **not wired** — any
+  Google user can currently sign in. Allowlist enforcement deferred per Nick.
+**Next:** Nick enables the Google provider in the Supabase dashboard (client
+ID/secret + redirect URLs). Then decide whether to wire `ALLOWED_EMAILS` before
+opening multi-user editing.
+
+---
+
 ## 2026-06-15 — Add Google sign-in to login page
 **Asked:** Get the site running, then help set up Google auth from Supabase.
 **Done:**
