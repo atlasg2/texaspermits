@@ -5,6 +5,48 @@
 
 ---
 
+## 2026-06-23 — Daily TABS monitor (new filings + status changes) via GitHub Actions
+**Asked:** Haven't scraped since the initial backfill (data last touched Jun 12).
+Set up the daily scrape we always intended — to catch NEW projects and STATUS
+CHANGES on existing ones.
+**Key finding:** The change-tracking machinery (`status_history`,
+`last_changed_at`) was built but had **never actually fired** — `status_history`
+held exactly one row per project (96,558 = the initial "first seen" only). Reason:
+the scraper is resumable-by-design and *skips* any project number already
+attempted, so a plain re-run only ever caught brand-new filings, never re-checked
+existing projects. So "daily scrape" = two jobs: (1) new filings (worked) +
+(2) re-fetch known projects to detect status moves (was missing).
+**Decisions (user):** Host = **GitHub Actions cron**. Refresh scope = **new +
+all open** (re-check every non-'Project Closed' project ≈ 60,795).
+**Done:**
+- `scraper/tabs_scraper.py`: new `--refresh {none,open,all}` — re-fetches
+  already-known projects (open = non-Closed) so status changes are detected,
+  de-duped against the new-filing scan. Default `none` = unchanged backfill/resume.
+- `scripts/seed_sqlite_from_supabase.py`: seeds a local worklist (project_number,
+  current_status, raw_hash; attempts=valid; `last_seen_at`=far past) from Supabase
+  so the job is **self-bootstrapping/stateless** on an ephemeral CI runner.
+- `scripts/sync_to_supabase.py`: added `--since <ISO>` so the daily run pushes
+  ONLY rows touched this pass — prevents seeded-but-untouched NULL rows from
+  clobbering good Supabase data.
+- `scripts/daily_scrape.sh`: orchestrator — computes current TX fiscal year
+  (Sep 1 rollover), seeds if no local db, scrapes `--years <FY> --refresh open`,
+  syncs `--since <run start>`. Runnable by hand or by CI.
+- `.github/workflows/daily-scrape.yml`: cron `0 11 * * *` (+ manual dispatch),
+  installs `requirements.txt`, needs one secret: `DATABASE_URL`.
+- Verified: scraper parses + `--refresh` help; open-count = 60,795; seeder reads
+  Supabase (95,877) and is a safe no-op locally; `--since` future ⇒ 0 rows;
+  live 3-project refresh on a throwaway db corrected statuses + logged the
+  transitions + bumped last_seen. Throwaway db removed.
+**Next / handoff:**
+- **User action:** add repo secret `DATABASE_URL` (Settings ▸ Secrets ▸ Actions),
+  then trigger once via Actions ▸ "Daily TABS monitor" ▸ Run workflow.
+- Note: Supabase has 95,877 vs local 96,558 — gap ≈ FY2021 (681) never synced;
+  one-off `sync_to_supabase.py --years 2021` would backfill it.
+- Possible tuning: 60k re-fetches/day is moderate load; could later restrict to
+  recently-active projects to be a lighter scraping citizen.
+
+---
+
 ## 2026-06-15 — Views hub as the home screen
 **Asked:** Don't land on the projects table. Land on the overview of all views
 (readable cards), where "All projects" is just one of the views.

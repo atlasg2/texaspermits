@@ -102,6 +102,10 @@ def main():
     ap.add_argument("--years", default=None, help="e.g. 2026 or 2021-2026 (default: all)")
     ap.add_argument("--db", default=SQLITE)
     ap.add_argument("--batch", type=int, default=500)
+    ap.add_argument("--since", default=None,
+                    help="only sync projects with last_seen_at >= this ISO timestamp. "
+                         "Used by the daily monitor so it pushes ONLY rows re-fetched "
+                         "this run, not seeded-but-untouched rows.")
     args = ap.parse_args()
 
     if not os.path.exists(args.db):
@@ -115,12 +119,17 @@ def main():
     s = sqlite3.connect(args.db, timeout=30)
     s.row_factory = sqlite3.Row
     s.execute("PRAGMA busy_timeout=30000")
-    q, params = "SELECT * FROM projects", ()
+    q, conds, params = "SELECT * FROM projects", [], []
     if args.years:
         yrs = years_list(args.years)
-        q += " WHERE " + " OR ".join(["project_number LIKE ?"] * len(yrs))
-        params = tuple(f"TABS{y}%" for y in yrs)
-    rows = [dict(r) for r in s.execute(q, params)]
+        conds.append("(" + " OR ".join(["project_number LIKE ?"] * len(yrs)) + ")")
+        params += [f"TABS{y}%" for y in yrs]
+    if args.since:
+        conds.append("last_seen_at >= ?")   # ISO8601 sorts lexically => safe compare
+        params.append(args.since)
+    if conds:
+        q += " WHERE " + " AND ".join(conds)
+    rows = [dict(r) for r in s.execute(q, tuple(params))]
     print(f"local rows to sync: {len(rows):,}")
     if not rows:
         return

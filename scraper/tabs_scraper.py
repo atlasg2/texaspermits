@@ -19,6 +19,14 @@ Usage:
     python3 scraper/tabs_scraper.py --years 2021-2025 --workers 4
     python3 scraper/tabs_scraper.py --years 2026 --workers 4      # add/resume a year
     python3 scraper/tabs_scraper.py --years 2026 --max-seq 40      # tiny smoke test
+
+DAILY MONITOR
+-------------
+    python3 scraper/tabs_scraper.py --years 2026 --refresh open  # new filings +
+                                                                 # re-check open projects
+--refresh re-fetches projects already in the DB so STATUS CHANGES are detected
+(plain resume skips them). open = every non-'Project Closed' project. See
+scripts/daily_scrape.sh for the full new+refresh+sync chain the cron runs.
 """
 import argparse
 import os
@@ -340,6 +348,13 @@ def main():
         help="use project_index (built by scripts/tabs_index.py) as the candidate "
              "list — fetches only known-valid numbers, no empty-seq probing",
     )
+    ap.add_argument(
+        "--refresh", choices=["none", "open", "all"], default="none",
+        help="re-fetch ALREADY-KNOWN projects to detect status changes (resume "
+             "normally skips them). open=every non-'Project Closed' project; "
+             "all=every project. Default none = backfill/resume only. Used by the "
+             "daily monitor — pairs with --years <current FY> to also catch new filings.",
+    )
     args = ap.parse_args()
 
     os.makedirs(os.path.dirname(args.db) or ".", exist_ok=True)
@@ -380,6 +395,26 @@ def main():
             pn = f"TABS{y}{s:06d}"
             if pn not in done:
                 candidates.append(pn)
+
+    # Refresh: re-fetch projects we've ALREADY seen so status changes are caught.
+    # The resume logic above skips known numbers (great for backfill); the daily
+    # monitor needs the opposite for existing projects. We append them here and
+    # de-dup, so the new-filing scan above still runs and a project re-fetched
+    # this pass is fetched exactly once.
+    if args.refresh != "none":
+        if args.refresh == "open":
+            where = "current_status IS NULL OR current_status <> 'Project Closed'"
+        else:  # all
+            where = "1=1"
+        refresh_pns = [pn for (pn,) in conn.execute(
+            f"SELECT project_number FROM projects WHERE {where}")]
+        print(f"  refresh={args.refresh}: re-checking {len(refresh_pns):,} known "
+              f"project(s) for status changes")
+        candidates.extend(refresh_pns)
+
+    # De-dup, preserving order (new-filing scan first, then the refresh set).
+    seen = set()
+    candidates = [pn for pn in candidates if not (pn in seen or seen.add(pn))]
 
     total = len(candidates)
     print(f"Years {years} | order={args.order} | already done: {len(done):,} | "

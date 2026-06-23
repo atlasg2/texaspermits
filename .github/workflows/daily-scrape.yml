@@ -1,0 +1,42 @@
+name: Daily TABS monitor
+
+# Scrapes new TABS filings + re-checks open projects for status changes, then
+# syncs into Supabase. The site (Vercel) reads Supabase, so it updates on its own.
+#
+# Stateless by design: no local tabs.db is persisted between runs. Each run seeds
+# its worklist from Supabase (the canonical store) — see scripts/daily_scrape.sh.
+#
+# REQUIRED secret: DATABASE_URL  (Supabase IPv4 Session Pooler connection string,
+# same value as DATABASE_URL in the local .env). Add at:
+#   repo > Settings > Secrets and variables > Actions > New repository secret.
+
+on:
+  schedule:
+    - cron: "0 11 * * *"   # 11:00 UTC daily (~6am Central) — after overnight, before business hours
+  workflow_dispatch:        # allow manual "Run workflow" from the Actions tab
+
+# Never let two daily runs overlap (a slow run shouldn't collide with the next).
+concurrency:
+  group: daily-scrape
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      WORKERS: "8"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Run daily monitor
+        run: ./scripts/daily_scrape.sh

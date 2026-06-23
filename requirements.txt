@@ -1,0 +1,4 @@
+# Python deps for the scraper + Supabase sync (used locally and by CI).
+requests>=2.32
+beautifulsoup4>=4.12
+psycopg2-binary>=2.9
