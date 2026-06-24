@@ -22,6 +22,9 @@ cap → **synced nothing** (Supabase still at Jun 12). Wrong approach.
   fetch detail ONLY for new/changed PNs → upsert + append `status_history` → store
   latest index codes for next time. `--dry-run` and `--workers` flags. Reuses
   `tabs_scraper.fetch_one`, `tabs_index.fetch_page`, `sync_to_supabase.transform`.
+  Calls `apply_lens.main()` when there are new PNs so new gym/fitness filings land
+  in `workspace_matches` (else they'd never appear in the lens views). Ran once
+  manually too: matches 1,784→1,802; 49 gym projects touched today now visible.
 - `.github/workflows/daily-scrape.yml`: now runs `daily_update.py --workers 4`
   (SearchProjects throttles higher concurrency), timeout 180→60 min.
 - **Ran it for real → Supabase is current:** 96,655 projects (+778 new filings),

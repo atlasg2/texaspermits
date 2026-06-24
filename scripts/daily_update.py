@@ -217,6 +217,16 @@ def main():
         )
     pg.commit()
 
+    # New projects can be lens matches (gym/fitness etc.) — refresh workspace_matches
+    # so they land in the right workspace views. Status-only changes don't affect the
+    # lens (it reads name/facility/scope/tenant), so only bother when there were new PNs.
+    if new_pns:
+        try:
+            import apply_lens
+            apply_lens.main()
+        except Exception as e:  # never let a lens hiccup fail the data update
+            print(f"lens refresh failed (non-fatal): {e}", file=sys.stderr)
+
     print(f"Done. upserted {len(fetched_rows):,} projects, "
           f"logged {len(history):,} status events, "
           f"{len(errored)} detail fetch error(s), "
