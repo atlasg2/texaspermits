@@ -5,6 +5,40 @@
 
 ---
 
+## 2026-06-24 — Efficient daily engine (index-diff), replacing the brute-force re-fetch
+**Asked:** The first daily run timed out; also "wasn't there a doc on the efficient
+way to do this?" — and the moat is timely *status-change* alerts on individual projects.
+**Found:** Yes — `docs/V1_BUILD.md §5` (the unbuilt "Daily engine") specifies the
+efficient design, and `scripts/tabs_index.py` already wraps the TABS **SearchProjects
+JSON API** (100 projects/request, status+cost+dates in the response). The brute-force
+`--refresh open` I built re-fetched all 60,795 detail pages → hit the 3h GitHub Actions
+cap → **synced nothing** (Supabase still at Jun 12). Wrong approach.
+**Done:**
+- `supabase/migrations/0012_index_status_code.sql`: add `projects.index_status_code`
+  so the daily diff is a clean index-code vs stored-code compare (no fragile
+  code→string mapping, no re-fetching unchanged projects). Applied via migrate.py.
+- `scripts/daily_update.py` (the real daily engine, per V1_BUILD §5): index-scan
+  current+prior FY (~455 req, parallel pages) → diff status codes vs Supabase →
+  fetch detail ONLY for new/changed PNs → upsert + append `status_history` → store
+  latest index codes for next time. `--dry-run` and `--workers` flags. Reuses
+  `tabs_scraper.fetch_one`, `tabs_index.fetch_page`, `sync_to_supabase.transform`.
+- `.github/workflows/daily-scrape.yml`: now runs `daily_update.py --workers 4`
+  (SearchProjects throttles higher concurrency), timeout 180→60 min.
+- **Ran it for real → Supabase is current:** 96,655 projects (+778 new filings),
+  `last_seen_at`=today, **2,193 status events logged** (937→Review Complete = prime
+  lead window, 709→Registered, 427→Inspection Complete, 120→Closed). 0 fetch errors.
+**Notes / next:**
+- The brute-force daily path (`scripts/daily_scrape.sh`, `seed_sqlite_from_supabase.py`,
+  scraper `--refresh`) is **superseded as the daily driver** — kept only for an
+  occasional full sweep (the doc's weekly straggler/scope-edit catch).
+- SearchProjects POST is slow (~3s/page) & throttles >4 workers — scan is the time
+  floor (~5-6 min); fine under the 60-min cap.
+- **Next (the actual "alerts" moat):** generate `inbox_items` for lens-matched
+  (gym) status changes — V1_BUILD §5 step 5 — so a move pings the team, not just
+  logs to history. Then push notifications (email/text) off those inbox events.
+
+---
+
 ## 2026-06-23 — Daily TABS monitor (new filings + status changes) via GitHub Actions
 **Asked:** Haven't scraped since the initial backfill (data last touched Jun 12).
 Set up the daily scrape we always intended — to catch NEW projects and STATUS

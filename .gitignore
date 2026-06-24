@@ -23,3 +23,6 @@ out/
 # Vercel
 web/.vercel
 .vercel
+
+# local-only GitHub PAT drop (never commit)
+.gh_token
