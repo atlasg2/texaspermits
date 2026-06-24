@@ -106,13 +106,7 @@ export async function setProjectViewHidden(
   projectNumber: string,
   hidden: boolean,
 ) {
-  const validViews = new Set([
-    "registered_10k",
-    "new_changed",
-    "active",
-    "recently_completed",
-    "possibly_late",
-  ]);
+  const validViews = new Set(["new_changed", "prospects", "gym"]);
   if (!validViews.has(viewKey)) throw new Error("Invalid view");
 
   const workspaceId = await eliteWorkspaceId();

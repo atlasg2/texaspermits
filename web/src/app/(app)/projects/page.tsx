@@ -2,6 +2,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Pagination } from "@/components/Pagination";
 import { ViewSwitcher } from "@/components/ViewSwitcher";
 import { ViewFilters } from "@/components/ViewFilters";
+import { StageFilter } from "@/components/StageFilter";
 import { getProjects, PAGE_SIZE } from "@/lib/data/projects";
 import { getView, VIEW_PAGE, VIEWS } from "@/lib/data/views";
 import { getLists } from "@/lib/data/lists";
@@ -50,6 +51,7 @@ export default async function ProjectsPage({
         maxSqft: positiveInteger(one(sp.maxSqft)),
         includeHidden: one(sp.hidden) === "1",
         sort,
+        stage: def.key === "gym" ? one(sp.stage) : undefined,
       }),
       getLists(),
     ]);
@@ -79,8 +81,11 @@ export default async function ProjectsPage({
             <ViewFilters
               key={`${def.key}:${flat.q ?? ""}:${flat.minSqft ?? ""}:${flat.maxSqft ?? ""}:${flat.hidden ?? ""}`}
               params={flat}
-              minimumFloor={def.key === "registered_10k" ? 10_000 : undefined}
+              minimumFloor={def.key === "prospects" ? 10_000 : undefined}
             />
+            {def.key === "gym" && (
+              <StageFilter params={flat} active={one(sp.stage)} />
+            )}
             <ProjectsTable
               rows={rows}
               activeSort={sort}

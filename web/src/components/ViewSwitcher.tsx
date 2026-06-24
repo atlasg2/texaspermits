@@ -5,11 +5,9 @@ import Link from "next/link";
 // switcher to one row; the full descriptions live on each view's caveat banner.
 const CHIPS: { key: string; label: string; href: string }[] = [
   { key: "all", label: "All projects", href: "/projects" },
-  { key: "registered_10k", label: "Registered 10k+", href: "/projects?view=registered_10k" },
-  { key: "new_changed", label: "New / Changed", href: "/projects?view=new_changed" },
-  { key: "active", label: "Active", href: "/projects?view=active" },
-  { key: "recently_completed", label: "Recently Completed", href: "/projects?view=recently_completed" },
-  { key: "possibly_late", label: "Behind", href: "/projects?view=possibly_late" },
+  { key: "new_changed", label: "New & Changed", href: "/projects?view=new_changed" },
+  { key: "prospects", label: "Prospects", href: "/projects?view=prospects" },
+  { key: "gym", label: "Gym Projects", href: "/projects?view=gym" },
 ];
 
 export function ViewSwitcher({ active }: { active: string }) {
