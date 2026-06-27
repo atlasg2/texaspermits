@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """
-Minimal, pro-grade migration runner for Supabase/Postgres.
+Minimal, pro-grade migration runner for Postgres (Neon).
 
-Applies any not-yet-applied *.sql files in supabase/migrations/ (in filename
-order) to the database in $DATABASE_URL, recording each in a schema_migrations
-table so it's idempotent and reproducible. Compatible with the Supabase CLI
-folder layout, so we can adopt `supabase db push` later with no changes.
+Applies any not-yet-applied *.sql files in db/migrations/ (in filename order) to
+the database in $DATABASE_URL, recording each in a schema_migrations table so
+it's idempotent and reproducible.
 
 Usage:
     set -a; source .env; set +a
@@ -19,7 +18,7 @@ import sys
 
 import psycopg2
 
-MIG_DIR = "supabase/migrations"
+MIG_DIR = "db/migrations"
 
 
 def conn():
